@@ -1,0 +1,118 @@
+PASS  silence in -> exactly 0 out (defaults) @48000                                                             0.0000   [0 .. 0]
+PASS  below the ceiling, os 1x, lookahead 0.5 ms: output = input delayed by the latency (< 0.4 fs) @48000    -145.3494 dBFS  [-600 .. -95]
+PASS  latency reported = oversampler + 64 + lookahead (1x, 0.5 ms) @48000                                     246.0000 samples  [246 .. 246]
+PASS  below the ceiling, os 1x, lookahead 2.0 ms: output = input delayed by the latency (< 0.4 fs) @48000    -145.3494 dBFS  [-600 .. -95]
+PASS  latency reported = oversampler + 64 + lookahead (1x, 2.0 ms) @48000                                     318.0000 samples  [318 .. 318]
+PASS  below the ceiling, os 1x, lookahead 5.0 ms: output = input delayed by the latency (< 0.4 fs) @48000    -145.3494 dBFS  [-600 .. -95]
+PASS  latency reported = oversampler + 64 + lookahead (1x, 5.0 ms) @48000                                     462.0000 samples  [462 .. 462]
+PASS  below the ceiling, os 2x, lookahead 0.5 ms: output = input delayed by the latency (< 0.4 fs) @48000    -144.4944 dBFS  [-600 .. -95]
+PASS  latency reported = oversampler + 64 + lookahead (2x, 0.5 ms) @48000                                     287.0000 samples  [287 .. 287]
+PASS  below the ceiling, os 2x, lookahead 2.0 ms: output = input delayed by the latency (< 0.4 fs) @48000    -144.4944 dBFS  [-600 .. -95]
+PASS  latency reported = oversampler + 64 + lookahead (2x, 2.0 ms) @48000                                     359.0000 samples  [359 .. 359]
+PASS  below the ceiling, os 2x, lookahead 5.0 ms: output = input delayed by the latency (< 0.4 fs) @48000    -144.4944 dBFS  [-600 .. -95]
+PASS  latency reported = oversampler + 64 + lookahead (2x, 5.0 ms) @48000                                     503.0000 samples  [503 .. 503]
+PASS  below the ceiling, os 4x, lookahead 0.5 ms: output = input delayed by the latency (< 0.4 fs) @48000    -143.4450 dBFS  [-600 .. -95]
+PASS  latency reported = oversampler + 64 + lookahead (4x, 0.5 ms) @48000                                     297.0000 samples  [297 .. 297]
+PASS  below the ceiling, os 4x, lookahead 2.0 ms: output = input delayed by the latency (< 0.4 fs) @48000    -143.4450 dBFS  [-600 .. -95]
+PASS  latency reported = oversampler + 64 + lookahead (4x, 2.0 ms) @48000                                     369.0000 samples  [369 .. 369]
+PASS  below the ceiling, os 4x, lookahead 5.0 ms: output = input delayed by the latency (< 0.4 fs) @48000    -143.4450 dBFS  [-600 .. -95]
+PASS  latency reported = oversampler + 64 + lookahead (4x, 5.0 ms) @48000                                     513.0000 samples  [513 .. 513]
+PASS  below the ceiling, os 8x, lookahead 0.5 ms: output = input delayed by the latency (< 0.4 fs) @48000    -140.9726 dBFS  [-600 .. -95]
+PASS  latency reported = oversampler + 64 + lookahead (8x, 0.5 ms) @48000                                     300.0000 samples  [300 .. 300]
+PASS  below the ceiling, os 8x, lookahead 2.0 ms: output = input delayed by the latency (< 0.4 fs) @48000    -140.9726 dBFS  [-600 .. -95]
+PASS  latency reported = oversampler + 64 + lookahead (8x, 2.0 ms) @48000                                     372.0000 samples  [372 .. 372]
+PASS  below the ceiling, os 8x, lookahead 5.0 ms: output = input delayed by the latency (< 0.4 fs) @48000    -140.9726 dBFS  [-600 .. -95]
+PASS  latency reported = oversampler + 64 + lookahead (8x, 5.0 ms) @48000                                     516.0000 samples  [516 .. 516]
+PASS  below the ceiling, os 16x, lookahead 0.5 ms: output = input delayed by the latency (< 0.4 fs) @48000   -137.9472 dBFS  [-600 .. -95]
+PASS  latency reported = oversampler + 64 + lookahead (16x, 0.5 ms) @48000                                    301.0000 samples  [301 .. 301]
+PASS  below the ceiling, os 16x, lookahead 2.0 ms: output = input delayed by the latency (< 0.4 fs) @48000   -137.9472 dBFS  [-600 .. -95]
+PASS  latency reported = oversampler + 64 + lookahead (16x, 2.0 ms) @48000                                    373.0000 samples  [373 .. 373]
+PASS  below the ceiling, os 16x, lookahead 5.0 ms: output = input delayed by the latency (< 0.4 fs) @48000   -137.9472 dBFS  [-600 .. -95]
+PASS  latency reported = oversampler + 64 + lookahead (16x, 5.0 ms) @48000                                    517.0000 samples  [517 .. 517]
+PASS  ceiling -1 dBTP, program +~12 dB (band-limited), all styles / clip / link: worst sample peak @48000      -1.0201 dBFS  [-60 .. -1]
+PASS  ceiling -1 dBTP, same: worst true peak (independent long-sinc reference) @48000                          -1.0182 dBTP  [-60 .. -1]
+PASS  ceiling -0.3 dBTP, clip 60 %, +14 dB: true peak (reference) @48000                                       -0.3208 dBTP  [-60 .. -0.3]
+PASS  engine's own true-peak meter agrees with the reference (difference) @48000                                0.0008 dB  [-0.06 .. 0.06]
+PASS  full-band input up to Nyquist, clip 60 %, 1x..16x: worst true peak (reference), ceiling -1 @48000        -1.0184 dBTP  [-60 .. -1]
+PASS  clipper 4x, 5 kHz hard-clipped 6 dB: worst alias below 20 kHz re fundamental @48000                     -81.7064 dBc  [-400 .. -75]
+PASS  clipper 8x, 5 kHz hard-clipped 6 dB: worst alias below 20 kHz re fundamental @48000                     -93.8222 dBc  [-400 .. -90]
+PASS  clipper 16x, 5 kHz hard-clipped 6 dB: worst alias below 20 kHz re fundamental @48000                   -106.5204 dBc  [-400 .. -99]
+PASS  bass 50 Hz, ~6 dB GR, bursts: THD+N, style transparent @48000                                          -138.7796 dB  [-400 .. -100]
+PASS  bass 50 Hz, ~6 dB GR, bursts: THD+N, style punchy @48000                                                -82.8138 dB  [-400 .. -75]
+PASS  bass 50 Hz, ~6 dB GR, bursts: THD+N, style loud @48000                                                  -56.4094 dB  [-400 .. -50]
+PASS  bass 50 Hz, ~6 dB GR, bursts: THD+N, style safe @48000                                                 -138.7796 dB  [-400 .. -100]
+PASS  engine meters: -23 dBFS stereo 1 kHz -> output integrated @48000                                        -22.9940 LUFS  [-23.1 .. -22.9]
+PASS  engine meters: input integrated @48000                                                                  -22.9933 LUFS  [-23.1 .. -22.9]
+INFO  compare: master louder than the input by @48000                                                           8.2930 dB
+PASS  compare: unprocessed at the master's loudness (difference) @48000                                        -0.2317 dB  [-1 .. 1]
+PASS  dither 16-bit: every output sample on the 16-bit grid (distance) @48000                                   0.0000 LSB  [0 .. 0.001]
+PASS  host block size 512 vs 37 (clip, punchy, link 60 %, shaped dither): difference @48000                  -600.0000 dBFS  [-600 .. -140]
+PASS  heap allocations inside process() @48000                                                                  0.0000   [0 .. 0]
+PASS  handshake: unacknowledged change keeps the old latency @48000                                           373.0000 samples  [373 .. 373]
+PASS  handshake: muted while waiting for the host @48000                                                     -600.0000 dBFS  [-600 .. -120]
+PASS  handshake: request carries the new latency @48000                                                       469.0000 samples  [469 .. 469]
+PASS  handshake: after the acknowledgement the new latency plays @48000                                       469.0000 samples  [469 .. 469]
+PASS  preset 'Init': sample peak <= its ceiling @48000                                                         -1.0750 dBFS  [-60 .. -1]
+PASS  preset 'Init': output finite @48000                                                                       1.0000   [1 .. 1]
+PASS  preset 'Streaming Master (-14 LUFS)': sample peak <= its ceiling @48000                                  -1.0750 dBFS  [-60 .. -1]
+PASS  preset 'Streaming Master (-14 LUFS)': output finite @48000                                                1.0000   [1 .. 1]
+PASS  preset 'Apple Music (-16 LUFS)': sample peak <= its ceiling @48000                                       -1.0750 dBFS  [-60 .. -1]
+PASS  preset 'Apple Music (-16 LUFS)': output finite @48000                                                     1.0000   [1 .. 1]
+PASS  preset 'Boom Bap Punch': sample peak <= its ceiling @48000                                               -1.0751 dBFS  [-60 .. -1]
+PASS  preset 'Boom Bap Punch': output finite @48000                                                             1.0000   [1 .. 1]
+PASS  preset 'Loud Rap / Trap': sample peak <= its ceiling @48000                                              -1.0751 dBFS  [-60 .. -1]
+PASS  preset 'Loud Rap / Trap': output finite @48000                                                            1.0000   [1 .. 1]
+PASS  preset 'Club / CD (-9 LUFS)': sample peak <= its ceiling @48000                                          -0.6058 dBFS  [-60 .. -0.5]
+PASS  preset 'Club / CD (-9 LUFS)': output finite @48000                                                        1.0000   [1 .. 1]
+PASS  preset 'Safe / Acoustic': sample peak <= its ceiling @48000                                              -1.2989 dBFS  [-60 .. -1]
+PASS  preset 'Safe / Acoustic': output finite @48000                                                            1.0000   [1 .. 1]
+PASS  preset 'Broadcast (EBU R128)': sample peak <= its ceiling @48000                                         -1.0753 dBFS  [-60 .. -1]
+PASS  preset 'Broadcast (EBU R128)': output finite @48000                                                       1.0000   [1 .. 1]
+ALL PASS: 69 of 69 checks passed (250.6 s)
+PASS  parameter count = 12
+PASS  parameter index 0 is 'input' (version hint 1)
+PASS  parameter index 1 is 'clip' (version hint 1)
+PASS  parameter index 2 is 'clipShape' (version hint 1)
+PASS  parameter index 3 is 'ceiling' (version hint 1)
+PASS  parameter index 4 is 'release' (version hint 1)
+PASS  parameter index 5 is 'style' (version hint 1)
+PASS  parameter index 6 is 'lookahead' (version hint 1)
+PASS  parameter index 7 is 'link' (version hint 1)
+PASS  parameter index 8 is 'os' (version hint 1)
+PASS  parameter index 9 is 'dither' (version hint 1)
+PASS  parameter index 10 is 'target' (version hint 1)
+PASS  parameter index 11 is 'compare' (version hint 1)
+PASS  defaults: ceiling -1 dBTP, 16x, target -14 LUFS, clipper off, input 0 dB
+PASS  state restore: all parameter values identical
+PASS  state restore: preset name restored
+PASS  state restore: restored instance renders bit-identical audio (max diff 0)
+PASS  state restore: latency = 8x + 64 + 3.25 ms lookahead (432 samples)
+PASS  raw-value state restore (pluginval scenario), 50 random rounds
+PASS  prepare: latency = 16x + 64 + 2 ms (373)
+PASS  after switching to 4x / 2.0 ms: reported latency 369 = 369
+PASS  after switching to 1x / 5.0 ms: reported latency 462 = 462
+PASS  after switching to 2x / 0.5 ms: reported latency 287 = 287
+PASS  after switching to 8x / 1.0 ms: reported latency 324 = 324
+PASS  after switching to 16x / 2.0 ms: reported latency 373 = 373
+PASS  every sample during the switches stays below the -1 dB ceiling
+PASS  programs: 8 factory presets
+PASS  every factory program applies its values and keeps the input gain
+PASS  'Init' program = all parameter defaults
+PASS  program change from another thread applies the values
+PASS  program change from another thread: name updated by the timer
+PASS  user preset saved (name with illegal file characters)
+PASS  user preset written to $XDG_DATA_HOME/AxellMaster/Presets
+PASS  user preset loads
+PASS  user preset restores values and name
+PASS  A/B: each slot keeps its own settings
+PASS  A/B: copy B > A
+PASS  LEARN: no suggestion before 3 s of audio
+PASS  LEARN: suggestion = target - integrated (-27.18 LUFS, +13.18 dB)
+PASS  LEARN: applied to the input gain
+PASS  LEARN twice: integrated -13.96 LUFS, within 0.5 LU of -14
+PASS  LEARN: true peak still <= -1 dBTP (-1.02)
+PASS  host bypass: dry output delayed by the reported latency (error 1.71829e-07)
+PASS  editor: opens/closes 5x while processing (100 % size)
+PASS  editor: resizable 75-200 %, aspect locked
+PASS  editor: re-opens at the last used size (150 %)
+ALL PASS: 46 of 46 plugin checks passed

@@ -1,0 +1,26 @@
+PASS  silence in -> exactly silence out (defaults): max |y| 0
+PASS  below the ceiling, 1x: output = input delayed by the reported latency (318 samples): max error -137.8 dBFS (< 0.4 fs content, limit -95)
+PASS  below the ceiling, 4x: output = input delayed by the reported latency (369 samples): max error -132.7 dBFS (< 0.4 fs content, limit -95)
+PASS  below the ceiling, 16x: output = input delayed by the reported latency (373 samples): max error -125.2 dBFS (< 0.4 fs content, limit -95)
+PASS  true peak <= ceiling (defaults, +12 dB): -1.017 dBTP, ceiling -1.0 dBTP (16x FFT reconstruction)
+PASS  true peak <= ceiling (clip 100 % hard, 16x, +14 dB): -1.018 dBTP, ceiling -1.0 dBTP (16x FFT reconstruction)
+PASS  true peak <= ceiling (clip 60 %, 1x, +14 dB): -1.017 dBTP, ceiling -1.0 dBTP (16x FFT reconstruction)
+PASS  true peak <= ceiling (Loud, link 0 %, fast release, +14 dB): -1.018 dBTP, ceiling -1.0 dBTP (16x FFT reconstruction)
+PASS  true peak <= ceiling (Punchy, ceiling -0.3, 0.5 ms lookahead, +14 dB): -0.316 dBTP, ceiling -0.3 dBTP (16x FFT reconstruction)
+PASS  true peak <= ceiling (44.1 kHz, clip 50 %, +12 dB): -1.018 dBTP, ceiling -1.0 dBTP (16x FFT reconstruction)
+PASS  true peak <= ceiling (96 kHz, Safe, +12 dB): -1.018 dBTP, ceiling -1.0 dBTP (16x FFT reconstruction)
+PASS  clipper 4x: worst alias below 20 kHz re fundamental: -81.7 dBc (limit -75)
+PASS  clipper 8x: worst alias below 20 kHz re fundamental: -93.8 dBc (limit -90)
+PASS  clipper 16x: worst alias below 20 kHz re fundamental: -106.5 dBc (limit -99)
+PASS  release styles recover in the order the names promise (Punchy < Loud < Transparent < Safe, ms to within 1 dB): Transparent 108 ms, Punchy 47 ms, Loud 56 ms, Safe 784 ms
+PASS  40 Hz bass under ~6 dB of steady limiting: THD+N per style (bass-aware hold): Transparent -138.9 dB (limit -90), Punchy -88.2 dB (limit -70), Loud -89.2 dB (limit -50), Safe -138.9 dB (limit -90)
+PASS  COMPARE plays the input at the master's loudness (BS.1770, ungated): master -13.11 LUFS (input -20.55), compare -13.14 LUFS, difference -0.03 LU
+PASS  dither dt: every sample on the 16-bit grid: max distance 0.00e+00 LSB
+PASS  dither ds: every sample on the 16-bit grid: max distance 0.00e+00 LSB
+PASS  16-bit shaped dither is quieter than TPDF in the 2-5 kHz band (where hearing is most sensitive): TPDF -140.2 dB/Hz, shaped -162.2 dB/Hz
+PASS  everything on: fixed vs random host block sizes (1..4096): max |difference| 0
+PASS  live latency changes (oversampling, lookahead): output always aligned with the host's compensation: 7 host latency updates [246, 287, 301, 359, 373, 414, 469], misaligned 16-sample windows 0, audible 79 %
+PASS  CPU, 4x: % of one core in real time: 3.35 % (limit 5.0 %)
+PASS  CPU, 16x (default) + clip 50 % + shaped dither: % of one core in real time: 4.93 % (limit 12.0 %)
+
+AUDIT: 24/24 pass (10 s)
