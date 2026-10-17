@@ -1,4 +1,5 @@
 // Axell Master - DSP suite (JUCE-free: Source/Engine.h exactly as it ships). Exit code = failed checks.
+#include "CodecCheck.h"
 #include "Engine.h"
 #include "Presets.h"
 
@@ -9,6 +10,7 @@
 #include <new>
 #include <random>
 #include <string>
+#include <thread>
 #include <vector>
 
 using namespace axm;
@@ -404,6 +406,91 @@ int main (int argc, char** argv)
                 }
             check (std::string ("preset '") + fp.name + "': sample peak <= its ceiling" + r, db (sp), -60, fp.params.ceilingDb, "dBFS");
             check (std::string ("preset '") + fp.name + "': output finite" + r, finite ? 1 : 0, 1, 1, "");
+        }
+    }
+    // 2.0: the streaming codec check (Opus / Vorbis encode-decode) - the codecs as they ship, unthreaded and threaded
+    {
+        auto feed = [] (CodecCheck& cc, const Buf& x, bool count)
+        {
+            const int n = (int) x[0].size();
+            long allocs = 0;
+            for (int p = 0; p < n; p += 512)
+            {
+                const float* io[2] { x[0].data() + p, x[1].data() + p };
+                countAllocs = count;
+                const long before = allocCount;
+                cc.push (io, 2, std::min (512, n - p));
+                allocs += allocCount - before;
+                countAllocs = false;
+            }
+            return allocs;
+        };
+        auto sine = [] (double fs, double secs, double dbfs)
+        {
+            Buf x (2, std::vector<float> ((size_t) (secs * fs)));
+            for (size_t i = 0; i < x[0].size(); ++i)
+                x[0][i] = x[1][i] = (float) (std::pow (10.0, dbfs / 20.0) * std::sin (2 * 3.14159265358979 * 997.0 * (double) i / fs));
+            return x;
+        };
+        for (double fs : { 44100.0, 48000.0, 88200.0, 96000.0 })
+        {
+            const std::string r = " @ " + std::to_string ((int) fs) + " Hz";
+            CodecCheck cc;
+            cc.prepare (fs, false);
+            cc.drain();
+            check ("codec check: Opus and Vorbis open" + r, cc.available (0) && cc.available (1) ? 1 : 0, 1, 1, "");
+            const long allocs = feed (cc, sine (fs, 4.0, -6.0), true);
+            check ("codec check: push() never allocates (audio thread)" + r, (double) allocs, 0, 0, "allocs");
+            cc.drain();
+            check ("codec check: 1 kHz sine at -6 dBFS -> Opus decodes at -6 dBTP" + r, cc.worstDb (0), -6.6, -5.4, "dBTP");
+            check ("codec check: 1 kHz sine at -6 dBFS -> Vorbis decodes at -6 dBTP" + r, cc.worstDb (1), -6.6, -5.2, "dBTP");
+            check ("codec check: no clipped samples at -6 dBFS" + r, cc.clippedSamples (0) + cc.clippedSamples (1), 0, 0, "");
+            check ("codec check: the whole signal was measured" + r, cc.measuredSeconds(), 3.9, 4.01, "s");
+            check ("codec check: SAFE has nothing to do at -6 dBTP" + r, cc.safeCeilingChangeDb(), 0, 0, "dB");
+        }
+        {
+            CodecCheck cc;
+            cc.prepare (48000.0, false);
+            cc.drain();
+            feed (cc, sine (48000.0, 2.0, 1.0), false);   // +1 dBFS: clips after decoding
+            cc.drain();
+            const float w = std::max (cc.worstDb (0), cc.worstDb (1));
+            check ("codec check: a +1 dBFS sine decodes above full scale and clips", w, 0.5, 1.6, "dBTP");
+            check ("codec check: ... with clipped samples counted", cc.clippedSamples (0) + cc.clippedSamples (1), 1, 1e9, "");
+            check ("codec check: SAFE lowers the ceiling to bring the worse codec to the target",
+                   cc.safeCeilingChangeDb(), CodecCheck::kTargetDb - w - 1e-4, CodecCheck::kTargetDb - w + 1e-4, "dB");
+            cc.requestReset();
+            cc.drain();
+            check ("codec check: reset clears the measurement", cc.measuredSeconds() + cc.clippedSamples (0) + cc.clippedSamples (1)
+                   + (cc.worstDb (0) > -150.0f ? 1 : 0), 0, 0, "");
+            feed (cc, Buf (2, std::vector<float> (48000 * 2)), false);   // digital silence
+            cc.drain();
+            check ("codec check: silence decodes to silence (no peak, no clip)", std::max (cc.worstDb (0), cc.worstDb (1)), -200, -150, "dBTP");
+            // a render far faster than the codecs: more than the 30 s ring without draining -> flagged, never blocking
+            cc.requestReset();
+            cc.drain();
+            feed (cc, sine (48000.0, 31.0, -6.0), false);
+            check ("codec check: audio it could not keep up with is flagged incomplete", cc.incomplete() ? 1 : 0, 1, 1, "");
+            cc.drain();
+        }
+        {
+            // threaded, as in the plugin: the worker keeps up with real-time-sized pushes
+            CodecCheck cc;
+            cc.prepare (48000.0, true);
+            const auto x = sine (48000.0, 5.0, -3.0);
+            for (int p = 0; p < (int) x[0].size(); p += 4800)
+            {
+                const float* io[2] { x[0].data() + p, x[1].data() + p };
+                cc.push (io, 2, std::min (4800, (int) x[0].size() - p));
+                std::this_thread::sleep_for (std::chrono::milliseconds (10));
+            }
+            for (int k = 0; k < 3000 && cc.measuredSeconds() < 4.9; ++k)   // up to 30 s: slow under sanitizers
+                std::this_thread::sleep_for (std::chrono::milliseconds (10));
+            check ("codec check (worker thread): measured the whole 5 s", cc.measuredSeconds(), 4.9, 5.01, "s");
+            // (Vorbis decodes a pure tone ~0.5 dB hot)
+            check ("codec check (worker thread): -3 dBFS sine decodes at -3 dBTP", std::max (cc.worstDb (0), cc.worstDb (1)), -3.6, -2.2, "dBTP");
+            check ("codec check (worker thread): nothing dropped", cc.incomplete() ? 1 : 0, 0, 0, "");
+            cc.stop();
         }
     }
     // CPU: 48 kHz stereo, 512 blocks, defaults (4x clipper path) and everything on

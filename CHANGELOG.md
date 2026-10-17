@@ -1,5 +1,27 @@
 # Changelog
 
+## 2.0.0 - 2026-10-17
+Masters that survive streaming.
+
+- **STREAMING CODECS (new):** the master runs through the real codecs while it plays, with the decoded true peak and
+  clipped samples since the last change.
+  - Opus 160 kbps (YouTube) and Vorbis 160 kbps (Spotify), the reference BSD-licensed libraries.
+  - Each codec runs at four frame offsets, because where the frames fall moves the decoded peaks by up to 0.9 dB.
+  - It runs on its own thread (about 15 % of one core), never on the audio thread.
+- **Why:** measured on real rap masters at -9 LUFS, 1.0's -1 dBTP masters decoded at up to +1.1 dBTP with Vorbis
+  and +0.6 with AAC (up to 68 clipped samples per song). The -0.5 dBTP Club preset clipped with Opus too.
+- **SAFE (new):** lowers the ceiling until both codecs decode at -0.3 dBTP or below (play again; 1-3 presses).
+  - Verified on 9 loud masters: 0 clipped samples with Opus, Vorbis 160 / 320, FDK AAC 256 and MP3 320, at 6
+    frame offsets each.
+  - The cost: 0.5-1.3 LU of loudness on a -9 LUFS master.
+- **20 new presets (28 in all), grouped** MASTER, YOUR STUDIO (BOOM BAP), VOCAL BUS, BEAT / DRUM BUS. Each was checked on
+  real material (masters on three rap mixes, vocal presets on dry and processed vocals, beat presets on beat stems).
+  - Boom Bap Loud, Codec-Ready (-9): 0 clipped samples after Opus and Vorbis without SAFE.
+  - Each preset's description shows as the tooltip of the preset name.
+- **Club / CD preset:** ceiling -1.0 dBTP (was -0.5).
+- **Unchanged:** the clipper, limiter, loudness meter and dither are bit-for-bit 1.0's. 1.0 projects open unchanged,
+  with the codec check on.
+
 ## 1.0.0 - 2026-10-15
 First release of Axell Master, the mastering limiter of the Axell suite.
 

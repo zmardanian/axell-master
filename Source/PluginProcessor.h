@@ -1,5 +1,6 @@
 #pragma once
 #include <juce_audio_processors/juce_audio_processors.h>
+#include "CodecCheck.h"
 #include "Engine.h"
 #include "Presets.h"
 
@@ -60,12 +61,22 @@ public:
 
     axm::Engine& engine() { return dsp; }
 
+    //== 2.0: streaming codec check (Opus / Vorbis encode-decode on a worker thread) ===================
+    axm::CodecCheck& codecCheck() { return codec; }
+    // the ceiling change SAFE would make (dB, <= 0; 0 = nothing to do) and applying it (message thread)
+    float codecSafeChangeDb() const;
+    void applyCodecSafe();
+    // restarts the loudness, true-peak and codec measurements
+    void resetMeasurements();
+
 private:
     void timerCallback() override;
     void syncEngineParams (bool bypass);
     void restoreTree (const juce::ValueTree& tree);
 
     axm::Engine dsp;
+    axm::CodecCheck codec;
+    axm::Params lastParams;   // the codec measurement restarts when the processing changes
     int preparedChannels = 0;
     std::atomic<int> currentProgram { 0 };
     std::atomic<bool> programNamePending { false };
@@ -79,6 +90,7 @@ private:
     std::atomic<float>* pCeil = nullptr;    std::atomic<float>* pRel = nullptr;    std::atomic<float>* pStyle = nullptr;
     std::atomic<float>* pLook = nullptr;    std::atomic<float>* pLink = nullptr;   std::atomic<float>* pOs = nullptr;
     std::atomic<float>* pDither = nullptr;  std::atomic<float>* pTarget = nullptr; std::atomic<float>* pCompare = nullptr;
+    std::atomic<float>* pCodec = nullptr;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MasterProcessor)
 };

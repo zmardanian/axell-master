@@ -1,0 +1,488 @@
+[
+ {
+  "passes": 2,
+  "mix": "suite",
+  "preset": 3,
+  "target": -0.3,
+  "lufs": -9.563602171250858,
+  "ceiling": -1.9,
+  "change": -0.634,
+  "measured_before": 0.334,
+  "measured_after": -0.516,
+  "worst": {
+   "aac 256k": 1.0241116662763021,
+   "fdk-aac 256k": -1.6654889964591524,
+   "mp3 320k": -1.6708864250998825,
+   "opus 160k": -1.073677593627087,
+   "vorbis 160k": -0.08300895307813778,
+   "vorbis 320k": -1.548304912576749
+  },
+  "clips": {
+   "aac 256k": 0,
+   "fdk-aac 256k": 0,
+   "mp3 320k": 0,
+   "opus 160k": 0,
+   "vorbis 160k": 0,
+   "vorbis 320k": 0
+  }
+ },
+ {
+  "passes": 2,
+  "mix": "dry",
+  "preset": 3,
+  "target": -0.3,
+  "lufs": -10.19078609053111,
+  "ceiling": -2.6,
+  "change": -1.2,
+  "measured_before": 0.9,
+  "measured_after": -0.598,
+  "worst": {
+   "aac 256k": 4.911456769044862,
+   "fdk-aac 256k": -2.2816735953456755,
+   "mp3 320k": -2.4396780365189628,
+   "opus 160k": -1.324784554285958,
+   "vorbis 160k": -0.7913290993968753,
+   "vorbis 320k": -2.1337759035477126
+  },
+  "clips": {
+   "aac 256k": 4,
+   "fdk-aac 256k": 0,
+   "mp3 320k": 0,
+   "opus 160k": 0,
+   "vorbis 160k": 0,
+   "vorbis 320k": 0
+  }
+ },
+ {
+  "passes": 1,
+  "mix": "penta",
+  "preset": 3,
+  "target": -0.3,
+  "lufs": -10.012772560631438,
+  "ceiling": -2.4,
+  "change": -1.355,
+  "measured_before": 1.055,
+  "measured_after": -0.512,
+  "worst": {
+   "aac 256k": 3.1238843018855924,
+   "fdk-aac 256k": -2.131777787731791,
+   "mp3 320k": -2.209030212092254,
+   "opus 160k": -1.114365742073385,
+   "vorbis 160k": -0.6343114632292818,
+   "vorbis 320k": -1.857212598120444
+  },
+  "clips": {
+   "aac 256k": 3,
+   "fdk-aac 256k": 0,
+   "mp3 320k": 0,
+   "opus 160k": 0,
+   "vorbis 160k": 0,
+   "vorbis 320k": 0
+  }
+ },
+ {
+  "passes": 3,
+  "mix": "suite",
+  "preset": 4,
+  "target": -0.3,
+  "lufs": -9.57739142917201,
+  "ceiling": -2.2,
+  "change": -0.614,
+  "measured_before": 0.314,
+  "measured_after": -0.646,
+  "worst": {
+   "aac 256k": -0.6650430973319705,
+   "fdk-aac 256k": -1.9226288024107645,
+   "mp3 320k": -1.9773781814011246,
+   "opus 160k": -1.1782105358724402,
+   "vorbis 160k": -0.4127044884052051,
+   "vorbis 320k": -1.66763598355194
+  },
+  "clips": {
+   "aac 256k": 0,
+   "fdk-aac 256k": 0,
+   "mp3 320k": 0,
+   "opus 160k": 0,
+   "vorbis 160k": 0,
+   "vorbis 320k": 0
+  }
+ },
+ {
+  "passes": 1,
+  "mix": "dry",
+  "preset": 4,
+  "target": -0.3,
+  "lufs": -9.843093067930056,
+  "ceiling": -2.5,
+  "change": -1.445,
+  "measured_before": 1.145,
+  "measured_after": -0.474,
+  "worst": {
+   "aac 256k": 0.9254638711086258,
+   "fdk-aac 256k": -2.204242360030331,
+   "mp3 320k": -2.270527998303922,
+   "opus 160k": -0.9848779530612743,
+   "vorbis 160k": -0.561176135969839,
+   "vorbis 320k": -2.051525233925709
+  },
+  "clips": {
+   "aac 256k": 1,
+   "fdk-aac 256k": 0,
+   "mp3 320k": 0,
+   "opus 160k": 0,
+   "vorbis 160k": 0,
+   "vorbis 320k": 0
+  }
+ },
+ {
+  "passes": 3,
+  "mix": "penta",
+  "preset": 4,
+  "target": -0.3,
+  "lufs": -9.766959965655289,
+  "ceiling": -2.4,
+  "change": -1.068,
+  "measured_before": 0.768,
+  "measured_after": -0.382,
+  "worst": {
+   "aac 256k": 0.942201965875646,
+   "fdk-aac 256k": -2.1154978305913987,
+   "mp3 320k": -2.146875871070458,
+   "opus 160k": -1.2574324000498793,
+   "vorbis 160k": -0.36786737322811247,
+   "vorbis 320k": -1.9470085113330544
+  },
+  "clips": {
+   "aac 256k": 1,
+   "fdk-aac 256k": 0,
+   "mp3 320k": 0,
+   "opus 160k": 0,
+   "vorbis 160k": 0,
+   "vorbis 320k": 0
+  }
+ },
+ {
+  "passes": 2,
+  "mix": "suite",
+  "preset": 5,
+  "target": -0.3,
+  "lufs": -9.661783086185146,
+  "ceiling": -1.9,
+  "change": -1.122,
+  "measured_before": 0.822,
+  "measured_after": -0.434,
+  "worst": {
+   "aac 256k": -1.0722899704141957,
+   "fdk-aac 256k": -1.6157013005180278,
+   "mp3 320k": -1.7056942115739786,
+   "opus 160k": -1.0512514160481,
+   "vorbis 160k": -0.7251406092245254,
+   "vorbis 320k": -1.4574516862726619
+  },
+  "clips": {
+   "aac 256k": 0,
+   "fdk-aac 256k": 0,
+   "mp3 320k": 0,
+   "opus 160k": 0,
+   "vorbis 160k": 0,
+   "vorbis 320k": 0
+  }
+ },
+ {
+  "passes": 2,
+  "mix": "dry",
+  "preset": 5,
+  "target": -0.3,
+  "lufs": -10.28738726631299,
+  "ceiling": -2.8,
+  "change": -1.249,
+  "measured_before": 0.949,
+  "measured_after": -0.812,
+  "worst": {
+   "aac 256k": -0.9014537041307551,
+   "fdk-aac 256k": -2.528919209333318,
+   "mp3 320k": -2.6111142089209842,
+   "opus 160k": -1.9314191586272664,
+   "vorbis 160k": -1.0457996326045562,
+   "vorbis 320k": -2.353262551064236
+  },
+  "clips": {
+   "aac 256k": 0,
+   "fdk-aac 256k": 0,
+   "mp3 320k": 0,
+   "opus 160k": 0,
+   "vorbis 160k": 0,
+   "vorbis 320k": 0
+  }
+ },
+ {
+  "passes": 3,
+  "mix": "penta",
+  "preset": 5,
+  "target": -0.3,
+  "lufs": -10.070575576610539,
+  "ceiling": -2.4,
+  "change": -1.346,
+  "measured_before": 1.046,
+  "measured_after": -0.37,
+  "worst": {
+   "aac 256k": 0.2602358948789819,
+   "fdk-aac 256k": -2.0862840520485944,
+   "mp3 320k": -2.269681715623367,
+   "opus 160k": -1.1614892898306086,
+   "vorbis 160k": -0.6708782724283767,
+   "vorbis 320k": -1.9911739323077147
+  },
+  "clips": {
+   "aac 256k": 1,
+   "fdk-aac 256k": 0,
+   "mp3 320k": 0,
+   "opus 160k": 0,
+   "vorbis 160k": 0,
+   "vorbis 320k": 0
+  }
+ },
+ {
+  "passes": 1,
+  "mix": "suite",
+  "preset": 3,
+  "target": -0.5,
+  "lufs": -9.563602171250858,
+  "ceiling": -1.9,
+  "change": -0.834,
+  "measured_before": 0.334,
+  "measured_after": -0.516,
+  "worst": {
+   "aac 256k": 1.0241116662763021,
+   "fdk-aac 256k": -1.6654889964591524,
+   "mp3 320k": -1.6708864250998825,
+   "opus 160k": -1.073677593627087,
+   "vorbis 160k": -0.08300895307813778,
+   "vorbis 320k": -1.548304912576749
+  },
+  "clips": {
+   "aac 256k": 0,
+   "fdk-aac 256k": 0,
+   "mp3 320k": 0,
+   "opus 160k": 0,
+   "vorbis 160k": 0,
+   "vorbis 320k": 0
+  }
+ },
+ {
+  "passes": 2,
+  "mix": "dry",
+  "preset": 3,
+  "target": -0.5,
+  "lufs": -10.119513857583543,
+  "ceiling": -2.5,
+  "change": -1.4,
+  "measured_before": 0.9,
+  "measured_after": -0.528,
+  "worst": {
+   "aac 256k": 5.231936466244603,
+   "fdk-aac 256k": -2.2368885934964298,
+   "mp3 320k": -2.267673975238435,
+   "opus 160k": -1.4397645047500653,
+   "vorbis 160k": -0.7597586156779307,
+   "vorbis 320k": -2.0197308570272
+  },
+  "clips": {
+   "aac 256k": 4,
+   "fdk-aac 256k": 0,
+   "mp3 320k": 0,
+   "opus 160k": 0,
+   "vorbis 160k": 0,
+   "vorbis 320k": 0
+  }
+ },
+ {
+  "passes": 1,
+  "mix": "penta",
+  "preset": 3,
+  "target": -0.5,
+  "lufs": -10.1503067838114,
+  "ceiling": -2.6,
+  "change": -1.555,
+  "measured_before": 1.055,
+  "measured_after": -0.548,
+  "worst": {
+   "aac 256k": 0.6827112546568623,
+   "fdk-aac 256k": -2.3808737793142947,
+   "mp3 320k": -2.3856587126059035,
+   "opus 160k": -1.1287026652687773,
+   "vorbis 160k": -0.7605724957084703,
+   "vorbis 320k": -2.196602099380485
+  },
+  "clips": {
+   "aac 256k": 1,
+   "fdk-aac 256k": 0,
+   "mp3 320k": 0,
+   "opus 160k": 0,
+   "vorbis 160k": 0,
+   "vorbis 320k": 0
+  }
+ },
+ {
+  "passes": 2,
+  "mix": "suite",
+  "preset": 4,
+  "target": -0.5,
+  "lufs": -9.629218814080868,
+  "ceiling": -2.3,
+  "change": -0.814,
+  "measured_before": 0.314,
+  "measured_after": -0.795,
+  "worst": {
+   "aac 256k": -0.7899934502057872,
+   "fdk-aac 256k": -2.0352883138407227,
+   "mp3 320k": -2.1155090391059392,
+   "opus 160k": -1.3088343746371338,
+   "vorbis 160k": -0.7233958527861023,
+   "vorbis 320k": -1.8482337455126059
+  },
+  "clips": {
+   "aac 256k": 0,
+   "fdk-aac 256k": 0,
+   "mp3 320k": 0,
+   "opus 160k": 0,
+   "vorbis 160k": 0,
+   "vorbis 320k": 0
+  }
+ },
+ {
+  "passes": 1,
+  "mix": "dry",
+  "preset": 4,
+  "target": -0.5,
+  "lufs": -9.945475945705182,
+  "ceiling": -2.7,
+  "change": -1.645,
+  "measured_before": 1.145,
+  "measured_after": -0.823,
+  "worst": {
+   "aac 256k": 2.149531640322321,
+   "fdk-aac 256k": -2.364859350460205,
+   "mp3 320k": -2.4904559322146755,
+   "opus 160k": -1.3858751074556175,
+   "vorbis 160k": -0.40410082486126436,
+   "vorbis 320k": -2.2925692186813715
+  },
+  "clips": {
+   "aac 256k": 1,
+   "fdk-aac 256k": 0,
+   "mp3 320k": 0,
+   "opus 160k": 0,
+   "vorbis 160k": 0,
+   "vorbis 320k": 0
+  }
+ },
+ {
+  "passes": 6,
+  "mix": "penta",
+  "preset": 4,
+  "target": -0.5,
+  "lufs": -10.0784412587061,
+  "ceiling": -3.0,
+  "change": -1.268,
+  "measured_before": 0.768,
+  "measured_after": -0.492,
+  "worst": {
+   "aac 256k": -1.0360875740761586,
+   "fdk-aac 256k": -2.727458750112382,
+   "mp3 320k": -2.76791966980999,
+   "opus 160k": -1.5444662220531584,
+   "vorbis 160k": -0.4934169062208226,
+   "vorbis 320k": -2.5705997472139215
+  },
+  "clips": {
+   "aac 256k": 0,
+   "fdk-aac 256k": 0,
+   "mp3 320k": 0,
+   "opus 160k": 0,
+   "vorbis 160k": 0,
+   "vorbis 320k": 0
+  }
+ },
+ {
+  "passes": 2,
+  "mix": "suite",
+  "preset": 5,
+  "target": -0.5,
+  "lufs": -9.7162914690368,
+  "ceiling": -2.0,
+  "change": -1.322,
+  "measured_before": 0.822,
+  "measured_after": -0.66,
+  "worst": {
+   "aac 256k": -0.8379854891864267,
+   "fdk-aac 256k": -1.753622136535805,
+   "mp3 320k": -1.8496812756562264,
+   "opus 160k": -1.128426569762546,
+   "vorbis 160k": -0.49591460515200503,
+   "vorbis 320k": -1.6755661606413166
+  },
+  "clips": {
+   "aac 256k": 0,
+   "fdk-aac 256k": 0,
+   "mp3 320k": 0,
+   "opus 160k": 0,
+   "vorbis 160k": 0,
+   "vorbis 320k": 0
+  }
+ },
+ {
+  "passes": 2,
+  "mix": "dry",
+  "preset": 5,
+  "target": -0.5,
+  "lufs": -10.28738726631299,
+  "ceiling": -2.8,
+  "change": -1.449,
+  "measured_before": 0.949,
+  "measured_after": -0.812,
+  "worst": {
+   "aac 256k": -0.9014537041307551,
+   "fdk-aac 256k": -2.528919209333318,
+   "mp3 320k": -2.6111142089209842,
+   "opus 160k": -1.9314191586272664,
+   "vorbis 160k": -1.0457996326045562,
+   "vorbis 320k": -2.353262551064236
+  },
+  "clips": {
+   "aac 256k": 0,
+   "fdk-aac 256k": 0,
+   "mp3 320k": 0,
+   "opus 160k": 0,
+   "vorbis 160k": 0,
+   "vorbis 320k": 0
+  }
+ },
+ {
+  "passes": 2,
+  "mix": "penta",
+  "preset": 5,
+  "target": -0.5,
+  "lufs": -10.183775821914873,
+  "ceiling": -2.6,
+  "change": -1.546,
+  "measured_before": 1.046,
+  "measured_after": -0.598,
+  "worst": {
+   "aac 256k": -0.9187942648273627,
+   "fdk-aac 256k": -2.097624157516345,
+   "mp3 320k": -2.4402491665294503,
+   "opus 160k": -1.168341389078115,
+   "vorbis 160k": -0.6997882299183509,
+   "vorbis 320k": -2.1816458550623
+  },
+  "clips": {
+   "aac 256k": 0,
+   "fdk-aac 256k": 0,
+   "mp3 320k": 0,
+   "opus 160k": 0,
+   "vorbis 160k": 0,
+   "vorbis 320k": 0
+  }
+ }
+]

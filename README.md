@@ -1,8 +1,9 @@
 # Axell Master (VST3, Linux)
 
 The mastering limiter of the Axell suite: an oversampled soft clipper into a true-peak limiter, with a loudness
-meter to the broadcast standard, delivery targets with LEARN, a level-matched COMPARE and psychoacoustically shaped
-dither for the export. Built for rap, trap and boom-bap masters, and transparent enough for acoustic music.
+meter to the broadcast standard, delivery targets with LEARN, a level-matched COMPARE, psychoacoustically shaped
+dither for the export, and (2.0) a check of the master through the real streaming codecs, with SAFE to keep a loud
+master from clipping after YouTube or Spotify encode it. Built for rap, trap and boom-bap masters, and transparent enough for acoustic music.
 
 ![Axell Master](docs/screenshots/master-100pct.png)
 
@@ -45,13 +46,40 @@ limiter gain reduction.
 - **DITHER** for the final export: 24-bit or 16-bit TPDF, or 16-bit shaped. The shaped mode uses the 9th-order
   F-weighted minimally audible filter (Wannamaker, JAES 1992), which is 22 dB quieter than plain TPDF at 2-5 kHz.
 
-There are 8 factory presets (streaming, Apple Music, boom bap, loud rap / trap, club, acoustic, broadcast), user
-presets and A/B. Presets never change GAIN: how hard to drive depends on the mix, not the genre.
+**STREAMING CODECS** (2.0). A -1 dBTP ceiling protects the file, but the services re-encode it, and a lossy codec's
+decoded peaks land higher than the master's. Measured on real rap masters at -9 LUFS, 1.0's -1 dBTP masters decoded
+at up to +1.1 dBTP (Vorbis 160, Spotify) and +0.6 (AAC), with clipped samples in every song.
+- **The check:** while the master plays, it is encoded and decoded with the real Opus 160 kbps (YouTube) and
+  Vorbis 160 kbps (Spotify) libraries, each at four frame offsets. Where the frames fall moves the decoded peak by up
+  to 0.9 dB, and the service's framing is unknown.
+- **Display:** the decoded true peak and clipped samples since the last change. Green = safe, amber = within
+  0.3 dB of full scale, red = clips.
+- **Threading:** it runs on its own thread and never touches the audio. On / off with the STREAMING CODECS switch.
+- **SAFE:** lowers the ceiling until both codecs decode at -0.3 dBTP or below. Play the song again and press again
+  if offered: a lower ceiling means denser limiting, so it usually takes 1-3 presses.
+  - Verified on 9 loud masters: 0 clipped samples with Opus, Vorbis 160 / 320, FDK AAC 256 and MP3 320 at 6 frame
+    offsets each.
+  - It costs 0.5-1.3 LU on a -9 LUFS master. That is the price of a loud master that survives streaming, and you
+  choose when to pay it.
+
+There are 28 factory presets (2.0 added 20), grouped in the menu:
+- **MASTER:** streaming, Apple Music, hip-hop / R&B, pop, EDM, rock, lo-fi, club, acoustic, podcast, broadcast,
+  mix-bus safety.
+- **YOUR STUDIO (BOOM BAP):** boom bap streaming master, a loud master that survives the codecs without SAFE, booth
+  rap vocal bus, drum bus knock, beat tape master.
+- **VOCAL BUS:** peak catcher, upfront, ad-libs / doubles, sung vocal.
+- **BEAT / DRUM BUS:** drum bus punch, 808 / sub control, trap hard clip, sample-based glue.
+
+Each 2.0 preset was checked on real material (DECISIONS M17), and its description shows as the tooltip of the preset
+name. User presets and A/B too. Presets never change GAIN: how hard to drive depends on the mix, not the genre.
 
 ## Measured quality
 
 | | |
 |---|---|
+| Streaming codecs after SAFE (9 loud rap masters, 6 frame offsets per codec) | 0 clipped samples with Opus 160, Vorbis 160 / 320, FDK AAC 256, MP3 320; worst decoded -0.08 dBTP |
+| In-plugin codec check vs ffmpeg's encoders | Opus within 0.16 dB, Vorbis within 0.1 dB (same framing) |
+| Codec check on vs off | bit-identical audio (it only listens, on its own thread) |
 | Silence in | exactly 0 out |
 | Below the ceiling | output = input delayed by the reported latency: error -138 dBFS at 1x, -125 dBFS at 16x |
 | True-peak ceiling, -1 dBTP, mixes driven +12 to +14 dB | worst -1.017 dBTP (independent reconstruction), every style, link, clip and oversampling setting, 44.1 / 48 / 96 kHz, full-band input |
@@ -60,14 +88,16 @@ presets and A/B. Presets never change GAIN: how hard to drive depends on the mix
 | Loudness meter | EBU Tech 3341 cases 1-5 and Tech 3342 cases 1-4 at 44.1 / 48 / 96 kHz |
 | Live latency changes | the host is told first; output always aligned (0 misaligned windows through a real-time host) |
 | Host block sizes 1-4096, everything on | identical output |
-| CPU (48 kHz stereo, one core) | 4.7 % at defaults (16x), 3.4 % at 4x |
+| CPU (48 kHz stereo, one core) | 4.7 % at defaults (16x), 3.4 % at 4x; the codec check adds ~15 % of one core on its own thread (switchable) |
 | Real-time safety | no allocation, lock or I/O in the audio path (allocation counter in the test suite) |
 
 All of these come from:
-- the automated suites: `tests/`, 209 DSP checks at 44.1 / 48 / 96 kHz plus 46 plugin checks; the core adds 80
-  checks;
-- an independent black-box audit through a VST3 host (`tests/independent/master_audit.py`, analysis from textbook
-  definitions);
+- the automated suites: `tests/`, 366 DSP checks at 44.1 / 48 / 96 kHz (the codec check also at 88.2 kHz) plus 58
+  plugin checks; the core adds 80 checks;
+- an independent black-box audit through a VST3 host (`tests/independent/master_audit.py`, 25 checks, analysis from
+  textbook definitions);
+- the studies in `research/`: real masters through the streaming codecs, SAFE's calibration, every preset on real
+  material;
 - AddressSanitizer + UBSan;
 - pluginval at strictness 10;
 - Steinberg's VST3 validator (47/47).
@@ -76,8 +106,8 @@ The reports are in `tests/`; the reasoning behind every design choice is in [doc
 
 ## Install (Linux)
 
-    tar xzf AxellMaster-1.0.0-linux-x86_64.tar.gz
-    cd AxellMaster-1.0.0-linux-x86_64
+    tar xzf AxellMaster-2.0.0-linux-x86_64.tar.gz
+    cd AxellMaster-2.0.0-linux-x86_64
     ./install.sh
 
 The installer copies `Axell Master.vst3` to `~/.vst3`. Then in REAPER: Options > Preferences > Plug-ins > VST >
@@ -99,5 +129,6 @@ Re-scan. Put it last on the master bus.
 
 Axell Yobag - axellpetre@protonmail.com (questions, bug reports, feedback). Issues on GitHub are welcome too.
 
-Licence: GNU AGPLv3 (`LICENSE`); third-party components in `THIRD_PARTY_NOTICES.md`. No code, data or graphics of any
+Licence: GNU AGPLv3 (`LICENSE`); third-party components (JUCE, and in 2.0 the Opus, libvorbis and libogg
+reference libraries, BSD-licensed) in `THIRD_PARTY_NOTICES.md`. No code, data or graphics of any
 commercial product are used.

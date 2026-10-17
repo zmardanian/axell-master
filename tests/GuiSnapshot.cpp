@@ -49,6 +49,9 @@ void shoot (const juce::File& dir, const juce::String& name, float uiScale, floa
             editor->refreshNow();
         juce::MessageManager::getInstance()->runDispatchLoopUntil (1);
     }
+    // the codec check runs on its own thread: let it finish the program (it lags a fast offline feed)
+    for (int k = 0; k < 400 && proc.codecCheck().measuredSeconds() < 7.5; ++k)
+        juce::MessageManager::getInstance()->runDispatchLoopUntil (25);
     editor->refreshNow();
     const auto img = ed->createComponentSnapshot (ed->getLocalBounds(), true, renderScale);
     const auto file = dir.getChildFile (name + ".png");

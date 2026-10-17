@@ -1,5 +1,5 @@
 Started validating: /var/home/Alex/axell-master/build/AxellMaster_artefacts/Release/VST3/Axell Master.vst3
-Random seed: 0x281d2ba
+Random seed: 0x4a9506a
 Validation started
 Strictness level: 10
 -----------------------------------------------------------------
@@ -7,7 +7,7 @@ Starting tests in: pluginval / Scan for plugins located in: /var/home/Alex/axell
 Num plugins found: 1
 
 Testing plugin: VST3-Axell Master-fdde94fb-89723899
-Axell Yobag: Axell Master v1.0.0
+Axell Yobag: Axell Master v2.0.0
 Completed tests in pluginval / Scan for plugins located in: /var/home/Alex/axell-master/build/AxellMaster_artefacts/Release/VST3/Axell Master.vst3
 -----------------------------------------------------------------
 Starting tests in: pluginval / Open plugin (cold)...
@@ -27,7 +27,7 @@ Reported taillength: 0
 Completed tests in pluginval / Plugin info
 -----------------------------------------------------------------
 Starting tests in: pluginval / Plugin programs...
-Num programs: 8
+Num programs: 28
 All program names checked
 
 Changing program
@@ -149,4 +149,3 @@ Completed tests in pluginval / Restoring default layout
 Starting tests in: pluginval / Fuzz parameters...
 Completed tests in pluginval / Fuzz parameters
 SUCCESS
-pluginval EXIT 0

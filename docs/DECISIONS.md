@@ -106,3 +106,101 @@ The limiter aims 0.02 dB below the ceiling: more than 6x the detector's worst in
 0.48 fs (0.003 dB; D21 of Axell Duo Compressor), and M2 guarantees the input never has content above
 0.48 fs. 0.05 dB (the Duo/Penta value) would give away loudness for no safety gain.
 *Verified:* the worst true peak over every reference-checked case in §2 is -1.018 dBTP for a -1 dBTP ceiling.
+
+## M13 - 2.0: the streaming codec check (why)
+A true-peak ceiling protects the master file. Streaming services do not play that file: they re-encode it with a lossy
+codec, which keeps the spectrum, not the waveform, so the decoded peaks of a loud master land higher than the
+master's. `research/real_masters.py` masters three real rap mixes with 1.0 at -9 LUFS (Boom Bap Punch / Loud Rap /
+Club presets, GAIN found for the target) and decodes them with ffmpeg's encoders:
+- **At the -1 dBTP ceiling:** decoded true peaks up to +0.6 dBTP (native AAC 256k) and +1.14 dBTP (Vorbis 160k,
+  Spotify's "high" quality), with up to 68 clipped samples per song. Opus 160k (YouTube) stayed at -0.1 to -0.3.
+- **At Club's -0.5 dBTP:** Opus clipped too (12-30 samples). At -14 LUFS nothing clipped: the mixes needed no limiting.
+So "-1 dBTP" is not enough for a loud rap master, and 1.0 could not show it.
+
+## M14 - The check measures the real codecs, at several framings
+- **Real codecs:** the master is encoded and decoded with the reference libraries:
+  - Opus 1.5.2 at 160 kbps (complexity 10, music);
+  - libvorbis 1.3.7 at 160 kbps (average bitrate without slow rate management, as ffmpeg's `-b:a`).
+  Both are BSD-licensed, so they ship in the AGPLv3 plugin. AAC cannot be embedded: the reference-quality encoder
+  (FDK) has a licence incompatible with the AGPL.
+- **How it is measured:** the decoded signal goes through the core's 8x true-peak meter, plus a count of samples
+  beyond full scale.
+- **Validated:** the in-plugin Opus matched ffmpeg's within 0.16 dB on three masters. The in-plugin Vorbis matched
+  ffmpeg's Vorbis within 0.1 dB once both started at the same sample.
+- **Framing decides the peaks.** The same master shifted by a few samples moved the decoded true peak:
+  - Vorbis by up to 0.9 dB (periodic in 128-sample steps, the short-block hop, but erratic within a period);
+  - Opus by 0.4-0.7 dB;
+  - native AAC by 1.0 dB.
+  The service's framing is unknown, so each codec runs at four start offsets (0, 211, 523, 857 samples), and the
+  worst result counts.
+- **Threading:** the codecs run on their own worker thread, about 15 % of one core for all eight streams. The audio
+  thread only copies the output into a lock-free ring (no allocation: tested). A render far faster than real time
+  that outruns the worker is flagged INCOMPLETE, never blocked.
+- **Sample rates:**
+  - Opus needs 48 kHz: 44.1 kHz is resampled (De-Reverb's polyphase resampler).
+  - At 88.2 / 96 kHz both codecs run on the 48 kHz copy (no service streams at 96 kHz, and libvorbis has no 160 kbps
+    mode there).
+- **What is measured:** the master as exported. The level-matched COMPARE signal and host bypass are not measured.
+  Any change to the processing restarts the measurement.
+*Verified:* DSP suite (decoded level of sines at 4 rates; clip counting; SAFE arithmetic; reset; silence; overflow
+flag; worker thread; push() allocation-free), plugin suite (SAFE, COMPARE not measured, off = nothing measured, 1.0
+projects), audit 10 (on vs off bit-identical audio).
+
+## M15 - SAFE: lower the ceiling until the codecs decode below full scale
+- **What it does:** SAFE lowers the ceiling, in its 0.1 dB steps, by however far the worse codec's decoded true peak
+  is above -0.3 dBTP, and restarts the measurement.
+- **Why it can take more than one press:** a lower ceiling means denser limiting, and denser material overshoots more.
+  The decoded peak falls by only 30-100 % of the ceiling change, so after playing again SAFE may offer another,
+  smaller step.
+- **Calibration** (`research/codec_safe_study.py`, results in `codec_safe_study.txt`): 9 masters (3 mixes x 3 loud
+  presets at -9 LUFS). SAFE was repeated as a user would, and each result went through 6 encoders at 6 start offsets
+  each, offsets different from the check's own.
+  - Target -0.3 dBTP: 1-3 presses, 0 clipped samples with Opus 160, Vorbis 160 and 320, FDK AAC 256 and MP3 320.
+    Worst decoded true peak -0.08 dBTP (Vorbis 160).
+  - The cost: a -9 LUFS master ends at -9.6 to -10.3 LUFS (final ceilings -1.9 to -2.8 dBTP).
+  - A single SAFE press left up to 4 clipped samples in Vorbis.
+  - Target -0.5 gave the same safety with more loudness given up.
+- **ffmpeg's native AAC encoder is excluded from the acceptance.** It produces spikes unrelated to the master: up to
+  +4.9 dBTP while every other codec decoded at -2 dBTP, and it got worse when the ceiling went down. No ceiling can
+  protect against an encoder defect. FDK AAC, the reference-quality AAC encoder, stayed at or below -1.35 dBTP
+  everywhere.
+*Verified:* the study above; plugin suite (a +16 dB master into -0.1 dBTP: SAFE proposes exactly the step to the
+target in 0.1 dB steps, and the ceiling moves).
+
+## M16 - 2.0 presets
+Club / CD: ceiling -0.5 -> -1.0 dBTP. At -9 LUFS, -0.5 clipped after Opus and Vorbis on every test master. The other
+loud presets keep -1 dBTP: the codec check and SAFE take each song as far as it needs.
+
+## M17 - 2.0: 20 more presets, each checked on real material
+Asked for: 5 for the artist's own work (underground boom bap, rapped vocals recorded in a booth, streaming releases,
+beat production) and 15 general ones for masters, vocal buses and beat / drum buses. In the menu they are grouped:
+MASTER, YOUR STUDIO (BOOM BAP), VOCAL BUS, BEAT / DRUM BUS. 1.0's eight keep program numbers 0-7.
+
+**How they were checked.** `research/presets_study.py` runs every new preset through the shipping engine
+(`tools/MasterRender`) on fitting material:
+- **Masters:** the artist's three mixes, GAIN found for the preset's target as LEARN does. Measured: loudness, true
+  peak and the decoded codec peaks.
+- **Vocal-bus presets:** the artist's dry and processed vocals, driven until the loudest peaks lose the amount the
+  description promises.
+- **Beat / drum-bus presets:** the beat-only first 21 s of two bounces, driven the same way.
+- **For all:** the 10-20 kHz energy added re a plain gain change (the grit clipping adds) and the crest factor.
+
+**What it showed** (all of it in `research/presets_study.json`):
+- **The -14 LUFS masters** have nothing to do on these mixes: they already sit at -14 LUFS with peaks at -1.7 to
+  -2.5 dBTP. The artist's mixes need no limiting for streaming.
+- **The loud boom bap preset changed:** at -2 dBTP, 2 of 3 masters still decoded at +0.5 dBTP with clipped samples.
+  A search over ceiling and clipping (`preset_loud_boombap_search.txt`) chose clip 45 % with a -3 dBTP ceiling.
+  - Result: 0 clipped samples on all three, worst -0.26 dBTP decoded, without SAFE.
+  - LEARN lands at -9.3 LUFS there: the limiter is at its density limit.
+- **EDM / Electronic Loud (-1 dBTP at -9 LUFS)** decodes at up to +0.75 dBTP (16-21 clipped samples). Its description
+  says SAFE is needed at that loudness.
+- **The vocal presets** take exactly their 3-6 dB of peak reduction and add at most +0.4 dB of 10-20 kHz energy;
+  Sung Vocal and Vocal Peak Catcher add +0.1 or less.
+- **The beat presets:**
+  - 808 / Sub Control adds none (-0.15 dB; the Safe style's bass-aware hold, no clipper).
+  - Sample-Based Beat Glue adds +0.1 dB, Boom Bap Drum Bus Knock +0.8, Drum Bus Punch +1.1.
+  - Trap Beat Hard Clip adds +2.4 dB: the grit it is named for.
+- **Podcast / Spoken Word** reaches -16 LUFS with 1.7 dB of peak control. **Mix Bus Safety** touches only the overs.
+*Verified also:* DSP suite (every preset: finite, sample peak below its ceiling, at three rates); plugin suite (28
+presets, 1.0's eight first in order, every preset has a group, a description and a unique name; every program
+applies its values and keeps GAIN).

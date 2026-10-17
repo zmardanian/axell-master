@@ -41,6 +41,27 @@ private:
     juce::String learnText;
 };
 
+// 2.0: the master through the streaming codecs (Opus = YouTube, Vorbis = Spotify): decoded true peak and clipped
+// samples since the last change, and SAFE (lowers the ceiling so the decoded peaks stay below full scale)
+class CodecView : public juce::Component, public juce::SettableTooltipClient
+{
+public:
+    explicit CodecView (MasterProcessor& p);
+    void refresh();
+    void paint (juce::Graphics&) override;
+    void resized() override;
+
+private:
+    MasterProcessor& proc;
+    ui::Toggle onOff { "STREAMING CODECS", ui::col::global, "" };
+    juce::TextButton safe { "SAFE" };
+    juce::Rectangle<int> rows;
+    float worst[2] { -200.0f, -200.0f };
+    int clips[2] { 0, 0 };
+    double secs = 0.0;
+    bool on = true, incomplete = false;
+};
+
 // output peak L/R (with the ceiling) and limiter / clipper gain reduction, peak-hold lines
 class Meters : public juce::Component, public juce::SettableTooltipClient
 {
@@ -110,6 +131,7 @@ private:
     ui::Choice dither;
     Meters meters;
     ClipCurve curve;
+    CodecView codecView { proc };
 
     juce::Rectangle<int> headerArea, clipArea, limArea, outArea, styleLabel, osLabel, ditherLabel, compareLabel;
     std::unique_ptr<juce::AlertWindow> saveDialog;

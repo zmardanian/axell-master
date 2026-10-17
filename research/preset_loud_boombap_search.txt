@@ -1,0 +1,6 @@
+clip 35 ceiling -2.4: suite LUFS -9.43 codec -0.64/0  dry LUFS -9.39 codec -0.17/0  penta LUFS -9.41 codec -0.07/0  | worst -0.07
+clip 35 ceiling -2.7: suite LUFS -9.40 codec -0.91/0  dry LUFS -9.38 codec -0.31/0  penta LUFS -9.38 codec -0.28/0  | worst -0.28
+clip 35 ceiling -3.0: suite LUFS -9.35 codec -0.59/0  dry LUFS -9.34 codec -0.33/0  penta LUFS -9.34 codec -0.29/0  | worst -0.29
+clip 45 ceiling -2.4: suite LUFS -9.31 codec -0.62/0  dry LUFS -9.29 codec -0.06/0  penta LUFS -9.30 codec -0.25/0  | worst -0.06
+clip 45 ceiling -2.7: suite LUFS -9.31 codec -0.62/0  dry LUFS -9.29 codec -0.50/0  penta LUFS -9.29 codec -0.15/0  | worst -0.15
+clip 45 ceiling -3.0: suite LUFS -9.26 codec -0.32/0  dry LUFS -9.26 codec -0.53/0  penta LUFS -9.27 codec -0.26/0  | worst -0.26

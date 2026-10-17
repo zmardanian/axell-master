@@ -50,6 +50,8 @@ APVTS::ParameterLayout MasterProcessor::createLayout()
         targets.add (t.name);
     p.push_back (std::make_unique<AudioParameterChoice> (ParameterID { "target", 1 }, "Loudness Target", targets, 1));
     p.push_back (std::make_unique<AudioParameterBool> (ParameterID { "compare", 1 }, "Level-Matched Compare", false));
+    // 2.0 (appended)
+    p.push_back (std::make_unique<AudioParameterBool> (ParameterID { "codecCheck", 2 }, "Codec Check", true));
     return { p.begin(), p.end() };
 }
 
@@ -71,6 +73,7 @@ MasterProcessor::MasterProcessor()
     pDither = apvts.getRawParameterValue ("dither");
     pTarget = apvts.getRawParameterValue ("target");
     pCompare = apvts.getRawParameterValue ("compare");
+    pCodec = apvts.getRawParameterValue ("codecCheck");
     startTimerHz (20);
 }
 
@@ -116,6 +119,9 @@ void MasterProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
     dsp.handshake().setNonRealtime (isNonRealtime());
     setLatencySamples (dsp.getLatencySamples());
     dsp.handshake().setHostLatency (getLatencySamples());
+    codec.setEnabled (pCodec->load() > 0.5f);
+    codec.prepare (sampleRate);
+    lastParams = readParams();
 }
 
 void MasterProcessor::reset()
@@ -138,7 +144,11 @@ void MasterProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
     if (preparedChannels == 0 || buffer.getNumSamples() == 0)
         return;
     syncEngineParams (false);
-    dsp.process (buffer.getArrayOfWritePointers(), juce::jmin (buffer.getNumChannels(), preparedChannels), buffer.getNumSamples());
+    const int nch = juce::jmin (buffer.getNumChannels(), preparedChannels);
+    dsp.process (buffer.getArrayOfWritePointers(), nch, buffer.getNumSamples());
+    // the master as it will be exported goes to the codec check (not the level-matched unprocessed COMPARE signal)
+    if (pCompare->load() < 0.5f)
+        codec.push (buffer.getArrayOfReadPointers(), nch, buffer.getNumSamples());
 }
 
 // host bypass: the engine keeps running (latency-aligned dry, 10 ms crossfade instead of a click)
@@ -155,6 +165,16 @@ void MasterProcessor::processBlockBypassed (juce::AudioBuffer<float>& buffer, ju
 
 void MasterProcessor::timerCallback()
 {
+    // codec check: on / off, and a new measurement whenever the processing changes (it measures these settings)
+    codec.setEnabled (pCodec->load() > 0.5f);
+    const auto now = readParams();
+    const auto& a = lastParams;
+    const auto moved = [] (float x, float y) { return std::abs (x - y) > 1.0e-4f; };
+    if (moved (now.inputDb, a.inputDb) || moved (now.clipPct, a.clipPct) || moved (now.clipShapePct, a.clipShapePct)
+        || moved (now.ceilingDb, a.ceilingDb) || moved (now.releaseMs, a.releaseMs) || now.style != a.style
+        || moved (now.lookMs, a.lookMs) || moved (now.linkPct, a.linkPct) || now.osLog2 != a.osLog2 || now.dither != a.dither)
+        codec.requestReset();
+    lastParams = now;
     if (programNamePending.exchange (false))
         setPresetName (getProgramName (currentProgram.load()));
     // latency handshake: a new latency plays only after it was reported to the host (axell::LatencyHandshake)
@@ -276,8 +296,36 @@ void MasterProcessor::copyActiveToOther() { slots[1 - activeSlot] = apvts.copySt
 
 void MasterProcessor::startLearn()
 {
-    dsp.requestMeterReset();
+    resetMeasurements();
     learning = true;
+}
+
+void MasterProcessor::resetMeasurements()
+{
+    dsp.requestMeterReset();
+    codec.requestReset();
+}
+
+float MasterProcessor::codecSafeChangeDb() const
+{
+    if (! codec.isEnabled() || codec.measuredSeconds() < 3.0)
+        return 0.0f;
+    // the ceiling moves in its 0.1 dB steps, down to the next one that reaches the target
+    const float c = pCeil->load(), change = codec.safeCeilingChangeDb();
+    if (change >= 0.0f)
+        return 0.0f;
+    const float next = std::max (-24.0f, std::floor ((c + change) * 10.0f - 1.0e-3f) / 10.0f);
+    return next - c;
+}
+
+void MasterProcessor::applyCodecSafe()
+{
+    const float d = codecSafeChangeDb();
+    if (d >= 0.0f)
+        return;
+    if (auto* prm = apvts.getParameter ("ceiling"))
+        prm->setValueNotifyingHost (prm->convertTo0to1 (juce::jlimit (-24.0f, 0.0f, pCeil->load() + d)));
+    resetMeasurements();
 }
 
 float MasterProcessor::learnSuggestionDb() const
@@ -297,7 +345,7 @@ void MasterProcessor::applyLearn()
         return;
     if (auto* prm = apvts.getParameter ("input"))
         prm->setValueNotifyingHost (prm->convertTo0to1 (juce::jlimit (-24.0f, 36.0f, pInput->load() + s)));
-    dsp.requestMeterReset();
+    resetMeasurements();
 }
 
 // APVTS::replaceState skips a parameter whose snapped value already matches; re-apply explicitly (pluginval scenario)

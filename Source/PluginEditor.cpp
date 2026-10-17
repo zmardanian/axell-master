@@ -36,7 +36,16 @@ const char* target = "Your delivery target. The integrated loudness turns green 
                      "while it plays and moves GAIN to hit the target.";
 const char* learn = "LEARN: play the loudest typical part of the song (at least 3 s), then press APPLY: GAIN moves by the "
                     "difference between the target and the measured integrated loudness. Repeat once to fine-tune.";
-const char* reset = "Restart the loudness and true-peak measurement.";
+const char* reset = "Restart the loudness, true-peak and codec measurements.";
+const char* codec = "Streaming services re-encode your master, and a lossy codec's decoded peaks land higher than the master's: "
+                    "a loud master at -1 dBTP can still clip on YouTube or Spotify. This runs the master through the real "
+                    "Opus (YouTube) and Vorbis (Spotify) encoders and decoders while it plays, and shows the decoded true peak "
+                    "and the clipped samples since the last change. Green: safe. Amber: within 0.3 dB of full scale. Red: "
+                    "clips. Play the whole song (or its loudest part), then press SAFE.";
+const char* safeBtn = "SAFE lowers the ceiling just enough that both codecs decode at -0.3 dBTP or below, in the ceiling's "
+                      "0.1 dB steps, and starts a new measurement. Play the song again: a lower ceiling also means denser "
+                      "limiting, so a codec can still be above - then SAFE offers another, smaller step (usually 1-3 in all). "
+                      "It costs a little loudness (typically 0.3-1 LU on a -9 LUFS master).";
 const char* gr = "OUT: output peak per side against the ceiling (yellow line). GR: limiter (orange) and clipper (teal) "
                  "gain reduction in dB. The lines hold the recent peaks.";
 const char* curve = "The clipper's curve: input level (after GAIN) left to right, output bottom to top, around the ceiling. "
@@ -185,11 +194,84 @@ LoudnessPanel::LoudnessPanel (MasterProcessor& p) : proc (p)
             proc.applyLearn();
         refresh();
     };
-    resetBtn.onClick = [this] { proc.engine().requestMeterReset(); };
+    resetBtn.onClick = [this] { proc.resetMeasurements(); };
     for (auto* c : std::initializer_list<juce::Component*> { &target, &learn, &resetBtn })
         addAndMakeVisible (c);
 }
 
+//==============================================================================
+CodecView::CodecView (MasterProcessor& p) : proc (p)
+{
+    onOff.bind (proc.apvts, "codecCheck", tip::codec);
+    setTooltip (tip::codec);
+    safe.setTooltip (tip::safeBtn);
+    safe.onClick = [this] { proc.applyCodecSafe(); refresh(); };
+    addAndMakeVisible (onOff);
+    addAndMakeVisible (safe);
+}
+
+void CodecView::refresh()
+{
+    auto& c = proc.codecCheck();
+    on = c.isEnabled();
+    for (int k = 0; k < 2; ++k)
+    {
+        worst[k] = c.available (k) ? c.worstDb (k) : -200.0f;
+        clips[k] = c.clippedSamples (k);
+    }
+    secs = c.measuredSeconds();
+    incomplete = c.incomplete();
+    const float d = proc.codecSafeChangeDb();
+    safe.setEnabled (on && d < 0.0f);
+    safe.setButtonText (d < 0.0f ? "SAFE  " + juce::String (d, 1) + " dB" : "SAFE");
+    repaint();
+}
+
+void CodecView::resized()
+{
+    auto b = getLocalBounds();
+    onOff.setBounds (b.removeFromTop (18));
+    safe.setBounds (b.removeFromBottom (24));
+    rows = b.reduced (0, 3);
+}
+
+void CodecView::paint (juce::Graphics& g)
+{
+    using namespace juce;
+    const int rh = rows.getHeight() / 2;
+    for (int k = 0; k < 2; ++k)
+    {
+        auto r = rows.withY (rows.getY() + k * rh).withHeight (rh);
+        g.setFont (ui::caps (10.0f, 1));
+        g.setColour (on ? col::dim : col::faint);
+        g.drawText (axm::CodecCheck::name (k), r, Justification::centredLeft);
+        String v = "--";
+        Colour cv = col::faint;
+        if (on && secs > 0.5 && worst[k] > -150.0f)
+        {
+            v = (worst[k] > 0.05f ? "+" : "") + String (worst[k], 1) + (clips[k] > 0 ? "  " + String (clips[k]) + " CLIP" : String());
+            cv = worst[k] > 0.0f || clips[k] > 0 ? col::warn.interpolatedWith (Colours::red, 0.6f)
+                 : worst[k] > axm::CodecCheck::kTargetDb ? col::warn : col::teal;
+        }
+        g.setFont (ui::font (12.0f, 1));
+        g.setColour (cv);
+        g.drawText (v, r, Justification::centredRight);
+    }
+    if (on && secs < 3.0)
+    {
+        g.setColour (col::faint);
+        g.setFont (ui::caps (8.5f, 1));
+        g.drawText ("PLAY THE SONG TO MEASURE", rows.withHeight (8).translated (0, rows.getHeight() - 2), Justification::centredLeft);
+    }
+    else if (on && incomplete)
+    {
+        g.setColour (col::faint);
+        g.setFont (ui::caps (8.5f, 1));
+        g.drawText ("INCOMPLETE (FAST RENDER)", rows.withHeight (8).translated (0, rows.getHeight() - 2), Justification::centredLeft);
+    }
+}
+
+//==============================================================================
 void LoudnessPanel::refresh()
 {
     const auto& o = proc.engine().outputLoudness();
@@ -420,7 +502,7 @@ MasterEditor::MasterEditor (MasterProcessor& p) : AudioProcessorEditor (&p), pro
     curve.setTooltip (tip::curve);
     for (auto* c : std::initializer_list<juce::Component*> { &presetPrev, &presetNext, &presetName, &presetSave, &slotA, &slotB, &slotCopy,
                                                             &compare, &history, &loudness, &gain, &ceiling, &release, &look, &link,
-                                                            &style, &clip, &shape, &os, &dither, &meters, &curve })
+                                                            &style, &clip, &shape, &os, &dither, &meters, &curve, &codecView })
         content.addAndMakeVisible (c);
     for (auto* b : { &slotA, &slotB })
         b->setColour (juce::TextButton::buttonOnColourId, col::global);
@@ -526,6 +608,9 @@ void MasterEditor::layout()
         a.removeFromBottom (22);
         compare.setBounds (a.removeFromBottom (34));
         compareLabel = a.removeFromBottom (20);
+        a.removeFromTop (12);
+        a.removeFromBottom (8);
+        codecView.setBounds (a);
     }
 }
 
@@ -594,7 +679,17 @@ void MasterEditor::timerCallback()
     meters.set (out, lim, cl, params.ceilingDb);
     curve.set (params, in);
     loudness.refresh();
+    codecView.refresh();
     presetName.setButtonText (proc.getPresetName());
+    {
+        // a factory preset's description as the tooltip: what it is for and how to drive it
+        juce::String desc;
+        for (const auto& fp : axm::factoryPresets())
+            if (proc.getPresetName() == fp.name)
+                desc = fp.description;
+        if (presetName.getTooltip() != desc)
+            presetName.setTooltip (desc);
+    }
     slotA.setToggleState (proc.getActiveSlot() == 0, juce::dontSendNotification);
     slotB.setToggleState (proc.getActiveSlot() == 1, juce::dontSendNotification);
     slotCopy.setButtonText (proc.getActiveSlot() == 0 ? "COPY A>B" : "COPY B>A");
@@ -604,10 +699,15 @@ void MasterEditor::timerCallback()
 void MasterEditor::showPresetMenu()
 {
     juce::PopupMenu menu, user;
-    menu.addSectionHeader ("FACTORY");
     const auto list = axm::factoryPresets();
-    for (int i = 0; i < (int) list.size(); ++i)
-        menu.addItem (1 + i, list[(size_t) i].name);
+    // factory presets by group (MASTER, YOUR STUDIO, VOCAL BUS, BEAT / DRUM BUS); the item ids stay the program numbers
+    for (const char* cat : axm::kCategories)
+    {
+        menu.addSectionHeader (cat);
+        for (int i = 0; i < (int) list.size(); ++i)
+            if (juce::String (list[(size_t) i].category) == cat)
+                menu.addItem (1 + i, list[(size_t) i].name, true, i == proc.getCurrentProgram());
+    }
     auto files = MasterProcessor::userPresetFolder().findChildFiles (juce::File::findFiles, false, "*.axmpreset");
     files.sort();
     for (int i = 0; i < files.size(); ++i)

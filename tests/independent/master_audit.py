@@ -245,6 +245,15 @@ for r, lim in zip(rs, [5.0, 12.0]):
     report(f"CPU, {'4x' if r.name == 'cpu4' else '16x (default) + clip 50 % + shaped dither'}: % of one core in real time",
            pct < lim, f"{pct:.2f} % (limit {lim} %)")
 
+# ---------------------------------------------------------------- 10. 2.0: the codec check only listens
+fs = 48000
+prog = beat(fs, 6.0, 0.35, seed=31)
+sets = {"Input": "10", "Clip": "40", "Style": "Loud"}
+rs = [Run("ccon", fs, sets=dict(sets, **{"Codec Check": "On"})), Run("ccoff", fs, sets=dict(sets, **{"Codec Check": "Off"}))]
+out = run_all(rs, {r.name: prog for r in rs}, jobname="codec")
+d = np.abs(out["ccon"] - out["ccoff"]).max()
+report("codec check on vs off: bit-identical audio (it only measures, on its own thread)", d == 0.0, f"max |difference| {d:.3g}")
+
 fails = [r for r in results if not r[1]]
 print(f"\nAUDIT: {len(results) - len(fails)}/{len(results)} pass ({__import__('time').time() - AUDIT_START:.0f} s)")
 sys.exit(len(fails))

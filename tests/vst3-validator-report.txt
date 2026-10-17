@@ -15,7 +15,7 @@
 	name = Axell Master
 	category = Audio Module Class
 	subCategories = Fx|Dynamics|Mastering
-	version = 1.0.0
+	version = 2.0.0
 	sdkVersion = VST 3.8.0
 	cid = ABCDEF019182FAEB417879624D737431
 
@@ -23,7 +23,7 @@
 	name = Axell Master
 	category = Component Controller Class
 	subCategories = Fx|Dynamics|Mastering
-	version = 1.0.0
+	version = 2.0.0
 	sdkVersion = VST 3.8.0
 	cid = ABCDEF011234ABCD417879624D737431
 
@@ -59,7 +59,7 @@ Info:  => Event Buses: [0 In(s) => 0 Out(s)]
 
 [Scan Parameters]
 Info:  ===Scan Parameters ====================================
-Info:  This component exports 14 parameter(s)
+Info:  This component exports 15 parameter(s)
 Info:     Parameter 000 (id=100358090): [title="Input"] [unit=""] [type = Float, default = 0.400000, unit = 0]
 Info:     Parameter 001 (id=3056464): [title="Clip"] [unit=""] [type = Float, default = 0.000000, unit = 0]
 Info:     Parameter 002 (id=533024305): [title="Clip Shape"] [unit=""] [type = Float, default = 0.300000, unit = 0]
@@ -72,9 +72,10 @@ Info:     Parameter 008 (id=3556): [title="Oversampling"] [unit=""] [type = Disc
 Info:     Parameter 009 (id=815960102): [title="Dither"] [unit=""] [type = Discrete, default = 0.000000, unit = 0]
 Info:     Parameter 010 (id=1266577809): [title="Loudness Target"] [unit=""] [type = Discrete, default = 0.200000, unit = 0]
 Info:     Parameter 011 (id=950484197): [title="Level-Matched Compare"] [unit=""] [type = Toggle, default = 0.000000, unit = 0]
-Info:     Parameter 012 (id=1652125811): [title="Bypass"] [unit=""] [type = Toggle, default = 0.000000, unit = 0]
-Info:     Parameter 013 (id=1886548852): [title="Program"] [unit=""] [type = Discrete, default = 0.000000, unit = 0]
-Info:  =>Parameter 013 (id=1886548852) is kIsProgramChange, but not a kIsList!
+Info:     Parameter 012 (id=1638826642): [title="Codec Check"] [unit=""] [type = Toggle, default = 1.000000, unit = 0]
+Info:     Parameter 013 (id=1652125811): [title="Bypass"] [unit=""] [type = Toggle, default = 0.000000, unit = 0]
+Info:     Parameter 014 (id=1886548852): [title="Program"] [unit=""] [type = Discrete, default = 0.000000, unit = 0]
+Info:  =>Parameter 014 (id=1886548852) is kIsProgramChange, but not a kIsList!
 [Succeeded]
 
 [MIDI Mapping]
@@ -94,7 +95,7 @@ Info:     Unit000 (ID = 0): "Root Unit" (parent ID = -1, programlist ID = 188654
 
 [Scan Programs]
 Info:  ===Scan Programs ====================================
-Info:  Programlist 000 (id=1886548852):  "Factory Presets" (8 programs).
+Info:  Programlist 000 (id=1886548852):  "Factory Presets" (28 programs).
 Info:  Programlist 000->Program 000: "Init"
 Info:  Programlist 000->Program 001: "Streaming Master (-14 LUFS)"
 Info:  Programlist 000->Program 002: "Apple Music (-16 LUFS)"
@@ -103,6 +104,26 @@ Info:  Programlist 000->Program 004: "Loud Rap / Trap"
 Info:  Programlist 000->Program 005: "Club / CD (-9 LUFS)"
 Info:  Programlist 000->Program 006: "Safe / Acoustic"
 Info:  Programlist 000->Program 007: "Broadcast (EBU R128)"
+Info:  Programlist 000->Program 008: "Boom Bap Streaming Master (-14)"
+Info:  Programlist 000->Program 009: "Boom Bap Loud, Codec-Ready (-9)"
+Info:  Programlist 000->Program 010: "Booth Rap Vocal Bus"
+Info:  Programlist 000->Program 011: "Boom Bap Drum Bus Knock"
+Info:  Programlist 000->Program 012: "Beat Tape / Instrumental Master (-14)"
+Info:  Programlist 000->Program 013: "Hip-Hop / R&B Streaming (-14)"
+Info:  Programlist 000->Program 014: "Pop / Modern Master"
+Info:  Programlist 000->Program 015: "EDM / Electronic Loud (-9)"
+Info:  Programlist 000->Program 016: "Rock / Band Master"
+Info:  Programlist 000->Program 017: "Lo-Fi / Chill Master (-14)"
+Info:  Programlist 000->Program 018: "Podcast / Spoken Word (-16)"
+Info:  Programlist 000->Program 019: "Mix Bus Safety (peaks only)"
+Info:  Programlist 000->Program 020: "Vocal Peak Catcher"
+Info:  Programlist 000->Program 021: "Vocal Upfront (Dense)"
+Info:  Programlist 000->Program 022: "Ad-libs / Background Vocals"
+Info:  Programlist 000->Program 023: "Sung Vocal (Smooth)"
+Info:  Programlist 000->Program 024: "Drum Bus Punch"
+Info:  Programlist 000->Program 025: "808 / Sub Control"
+Info:  Programlist 000->Program 026: "Trap Beat Hard Clip"
+Info:  Programlist 000->Program 027: "Sample-Based Beat Glue"
 [Succeeded]
 
 [Terminate/Initialize]
@@ -243,7 +264,6 @@ Info:  ===Accuracy: Block, 1 Parameters, Change every100 Samples ===============
 
 [Accuracy: Sample, 1 Parameters, Change every100 Samples]
 Info:  ===Accuracy: Sample, 1 Parameters, Change every100 Samples ====================================
-Info:     Not all points have been read via IParameterChanges
 Info:     Not all points have been read via IParameterChanges
 [Succeeded]
 

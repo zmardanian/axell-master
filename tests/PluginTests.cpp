@@ -84,16 +84,19 @@ int main()
     //== 1. frozen parameter IDs and order (automation uses the index), version hints
     {
         MasterProcessor p;
+        // 1.0's twelve keep their index and version hint 1; 2.0 appends codecCheck (version hint 2)
         const juce::StringArray frozen { "input", "clip", "clipShape", "ceiling", "release", "style", "lookahead", "link",
-                                         "os", "dither", "target", "compare" };
+                                         "os", "dither", "target", "compare", "codecCheck" };
         auto& params = p.getParameters();
         check (params.size() == frozen.size(), "parameter count = " + juce::String (frozen.size()));
         for (int i = 0; i < params.size() && i < frozen.size(); ++i)
         {
             auto* wp = dynamic_cast<juce::AudioProcessorParameterWithID*> (params[i]);
-            check (wp != nullptr && wp->getParameterID() == frozen[i] && wp->getVersionHint() == 1,
-                   "parameter index " + juce::String (i) + " is '" + frozen[i] + "' (version hint 1)");
+            const int hint = i < 12 ? 1 : 2;
+            check (wp != nullptr && wp->getParameterID() == frozen[i] && wp->getVersionHint() == hint,
+                   "parameter index " + juce::String (i) + " is '" + frozen[i] + "' (version hint " + juce::String (hint) + ")");
         }
+        check (getParam (p, "codecCheck") == 1.0f, "default: codec check on");
         check (getParam (p, "ceiling") == -1.0f && getParam (p, "os") == 4.0f && getParam (p, "target") == 1.0f
                    && getParam (p, "clip") == 0.0f && getParam (p, "input") == 0.0f,
                "defaults: ceiling -1 dBTP, 16x, target -14 LUFS, clipper off, input 0 dB");
@@ -203,6 +206,25 @@ int main()
         MasterProcessor p;
         const auto list = axm::factoryPresets();
         check (p.getNumPrograms() == (int) list.size(), "programs: " + juce::String (p.getNumPrograms()) + " factory presets");
+        // 1.0's eight keep their program numbers (projects and host automation refer to them); 2.0 adds 20
+        const char* v1[] { "Init", "Streaming Master (-14 LUFS)", "Apple Music (-16 LUFS)", "Boom Bap Punch", "Loud Rap / Trap",
+                           "Club / CD (-9 LUFS)", "Safe / Acoustic", "Broadcast (EBU R128)" };
+        bool sameV1 = list.size() == 28;
+        for (int i = 0; i < 8; ++i)
+            sameV1 = sameV1 && juce::String (list[(size_t) i].name) == v1[i];
+        check (sameV1, "presets: 28; 1.0's eight first, in their order");
+        bool cats = true, named = true;
+        juce::StringArray names;
+        for (const auto& fp : list)
+        {
+            bool known = false;
+            for (const char* c : axm::kCategories)
+                known = known || juce::String (fp.category) == c;
+            cats = cats && known;
+            named = named && juce::String (fp.description).length() > 20 && ! names.contains (fp.name);
+            names.add (fp.name);
+        }
+        check (cats && named, "presets: every one has a menu group, a description, and a unique name");
         setParam (p, "input", 5.0f);
         bool allOk = true;
         for (int i = 0; i < p.getNumPrograms(); ++i)
@@ -348,6 +370,68 @@ int main()
         ed.reset();
         std::unique_ptr<juce::AudioProcessorEditor> ed2 (p.createEditor());
         check (ed2->getWidth() == mui::kWidth * 3 / 2, "editor: re-opens at the last used size (150 %)");
+    }
+
+    //== 2.0: streaming codec check
+    {
+        // a 1.0 project (no codecCheck in its state) opens with the check on and everything else as saved
+        MasterProcessor a;
+        setParam (a, "ceiling", -1.5f);
+        juce::MemoryBlock st;
+        a.getStateInformation (st);
+        auto xml = juce::AudioProcessor::getXmlFromBinary (st.getData(), (int) st.getSize());
+        for (auto* c : xml->getChildIterator())
+            if (c->getStringAttribute ("id") == "codecCheck")
+            {
+                xml->removeChildElement (c, true);
+                break;
+            }
+        juce::MemoryBlock old;
+        juce::AudioProcessor::copyXmlToBinary (*xml, old);
+        MasterProcessor b;
+        b.setStateInformation (old.getData(), (int) old.getSize());
+        check (getParam (b, "codecCheck") == 1.0f && std::abs (getParam (b, "ceiling") + 1.5f) < 1e-4f,
+               "a 1.0 project opens with the codec check on and its own settings");
+    }
+    {
+        MasterProcessor p;
+        prepare (p, 48000.0, 512);
+        check (p.codecSafeChangeDb() == 0.0f, "codec check: SAFE has nothing to do before 3 s were measured");
+        // a loud master: pushed hard into a -0.1 dBTP ceiling, the codecs decode above full scale
+        p.setCurrentProgram (4);
+        setParam (p, "input", 16.0f);
+        setParam (p, "ceiling", -0.1f);
+        pumpMessages (120);   // the timer sees the change and restarts the measurement
+        const auto x = program (48000 * 8, 48000.0, 0.5, 11);
+        render (p, x, 512);
+        for (int k = 0; k < 600 && p.codecCheck().measuredSeconds() < 7.5; ++k)
+            pumpMessages (20);
+        const float w = std::max (p.codecCheck().worstDb (0), p.codecCheck().worstDb (1));
+        check (p.codecCheck().measuredSeconds() > 7.5, "codec check: the worker measured the whole render ("
+               + juce::String (p.codecCheck().measuredSeconds(), 1) + " s)");
+        const float d = p.codecSafeChangeDb();
+        check (w > axm::CodecCheck::kTargetDb && d < 0.0f && d <= axm::CodecCheck::kTargetDb - w + 1e-4f && d > axm::CodecCheck::kTargetDb - w - 0.1f,
+               "codec check: decoded " + juce::String (w, 2) + " dBTP -> SAFE proposes " + juce::String (d, 1) + " dB (0.1 dB steps, reaches the target)");
+        p.applyCodecSafe();
+        check (std::abs (getParam (p, "ceiling") - (-0.1f + d)) < 0.051f, "SAFE: ceiling lowered to " + juce::String (getParam (p, "ceiling"), 1) + " dBTP");
+        for (int k = 0; k < 100 && p.codecCheck().measuredSeconds() > 0.0; ++k)
+            pumpMessages (10);
+        check (p.codecCheck().measuredSeconds() == 0.0, "SAFE: the codec measurement restarts");
+        // COMPARE plays the unprocessed mix: it is not what gets exported, so it never reaches the codecs
+        setParam (p, "compare", 1.0f);
+        pumpMessages (60);
+        p.codecCheck().requestReset();
+        pumpMessages (60);
+        render (p, program (48000 * 2, 48000.0, 0.5, 12), 512);
+        pumpMessages (300);
+        check (p.codecCheck().measuredSeconds() == 0.0, "codec check: COMPARE audio is not measured");
+        setParam (p, "compare", 0.0f);
+        // switched off: nothing measured
+        setParam (p, "codecCheck", 0.0f);
+        pumpMessages (120);
+        render (p, program (48000 * 2, 48000.0, 0.5, 13), 512);
+        pumpMessages (300);
+        check (! p.codecCheck().isEnabled() && p.codecCheck().measuredSeconds() == 0.0, "codec check off: nothing measured");
     }
 
     tmp.deleteRecursively();

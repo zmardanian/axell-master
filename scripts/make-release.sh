@@ -96,7 +96,9 @@ Axell Master $VERSION - Linux x86_64 VST3
 A mastering limiter for the end of your master bus: an oversampled soft clipper (up to 16x) into a
 true-peak limiter with four release styles, a full loudness meter (EBU R128 / ITU-R BS.1770:
 momentary, short-term, integrated, loudness range, true peak, PLR), streaming targets with LEARN,
-a level-matched COMPARE, dither for the final export, factory presets and A/B.
+a level-matched COMPARE, dither for the final export, factory presets and A/B. 2.0: STREAMING
+CODECS checks the master through the real Opus (YouTube) and Vorbis (Spotify) codecs while it plays,
+and SAFE lowers the ceiling until a loud master no longer clips after their encoding.
 
 
 REQUIREMENTS

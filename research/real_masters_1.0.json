@@ -1,0 +1,437 @@
+{
+ "Streaming Master (-14 LUFS) @ -14.0 / suite": {
+  "preset": "Streaming Master (-14 LUFS)",
+  "target": -14.0,
+  "gain": 0.02,
+  "lufs": -14.08,
+  "tp": -2.6,
+  "st_max": -12.42,
+  "plr": 11.48,
+  "aac 256k": {
+   "tp": -2.56,
+   "sp": -2.63,
+   "clipped": 0
+  },
+  "fdk-aac 256k": {
+   "tp": -2.59,
+   "sp": -2.62,
+   "clipped": 0
+  },
+  "mp3 320k": {
+   "tp": -2.59,
+   "sp": -2.64,
+   "clipped": 0
+  },
+  "opus 160k": {
+   "tp": -2.48,
+   "sp": -2.53,
+   "clipped": 0
+  }
+ },
+ "Streaming Master (-14 LUFS) @ -14.0 / dry": {
+  "preset": "Streaming Master (-14 LUFS)",
+  "target": -14.0,
+  "gain": 0.09,
+  "lufs": -14.05,
+  "tp": -2.08,
+  "st_max": -12.11,
+  "plr": 11.97,
+  "aac 256k": {
+   "tp": -2.09,
+   "sp": -2.11,
+   "clipped": 0
+  },
+  "fdk-aac 256k": {
+   "tp": -2.11,
+   "sp": -2.11,
+   "clipped": 0
+  },
+  "mp3 320k": {
+   "tp": -2.08,
+   "sp": -2.08,
+   "clipped": 0
+  },
+  "opus 160k": {
+   "tp": -2.11,
+   "sp": -2.13,
+   "clipped": 0
+  }
+ },
+ "Streaming Master (-14 LUFS) @ -14.0 / penta": {
+  "preset": "Streaming Master (-14 LUFS)",
+  "target": -14.0,
+  "gain": 0.1,
+  "lufs": -14.0,
+  "tp": -1.65,
+  "st_max": -12.15,
+  "plr": 12.35,
+  "aac 256k": {
+   "tp": -1.66,
+   "sp": -1.68,
+   "clipped": 0
+  },
+  "fdk-aac 256k": {
+   "tp": -1.66,
+   "sp": -1.68,
+   "clipped": 0
+  },
+  "mp3 320k": {
+   "tp": -1.65,
+   "sp": -1.68,
+   "clipped": 0
+  },
+  "opus 160k": {
+   "tp": -1.64,
+   "sp": -1.65,
+   "clipped": 0
+  }
+ },
+ "Boom Bap Punch @ -14.0 / suite": {
+  "preset": "Boom Bap Punch",
+  "target": -14.0,
+  "gain": 0.02,
+  "lufs": -14.08,
+  "tp": -2.6,
+  "st_max": -12.42,
+  "plr": 11.48,
+  "aac 256k": {
+   "tp": -2.56,
+   "sp": -2.63,
+   "clipped": 0
+  },
+  "fdk-aac 256k": {
+   "tp": -2.59,
+   "sp": -2.62,
+   "clipped": 0
+  },
+  "mp3 320k": {
+   "tp": -2.59,
+   "sp": -2.64,
+   "clipped": 0
+  },
+  "opus 160k": {
+   "tp": -2.48,
+   "sp": -2.53,
+   "clipped": 0
+  }
+ },
+ "Boom Bap Punch @ -14.0 / dry": {
+  "preset": "Boom Bap Punch",
+  "target": -14.0,
+  "gain": 0.09,
+  "lufs": -14.05,
+  "tp": -2.08,
+  "st_max": -12.11,
+  "plr": 11.97,
+  "aac 256k": {
+   "tp": -2.09,
+   "sp": -2.11,
+   "clipped": 0
+  },
+  "fdk-aac 256k": {
+   "tp": -2.11,
+   "sp": -2.11,
+   "clipped": 0
+  },
+  "mp3 320k": {
+   "tp": -2.08,
+   "sp": -2.08,
+   "clipped": 0
+  },
+  "opus 160k": {
+   "tp": -2.11,
+   "sp": -2.13,
+   "clipped": 0
+  }
+ },
+ "Boom Bap Punch @ -14.0 / penta": {
+  "preset": "Boom Bap Punch",
+  "target": -14.0,
+  "gain": 0.1,
+  "lufs": -14.0,
+  "tp": -1.65,
+  "st_max": -12.15,
+  "plr": 12.35,
+  "aac 256k": {
+   "tp": -1.66,
+   "sp": -1.68,
+   "clipped": 0
+  },
+  "fdk-aac 256k": {
+   "tp": -1.66,
+   "sp": -1.68,
+   "clipped": 0
+  },
+  "mp3 320k": {
+   "tp": -1.65,
+   "sp": -1.68,
+   "clipped": 0
+  },
+  "opus 160k": {
+   "tp": -1.64,
+   "sp": -1.65,
+   "clipped": 0
+  }
+ },
+ "Boom Bap Punch @ -9.0 / suite": {
+  "preset": "Boom Bap Punch",
+  "target": -9.0,
+  "gain": 5.66,
+  "lufs": -9.12,
+  "tp": -1.02,
+  "st_max": -7.5,
+  "plr": 8.1,
+  "aac 256k": {
+   "tp": -0.5,
+   "sp": -0.51,
+   "clipped": 0
+  },
+  "fdk-aac 256k": {
+   "tp": -0.77,
+   "sp": -0.86,
+   "clipped": 0
+  },
+  "mp3 320k": {
+   "tp": -0.9,
+   "sp": -0.9,
+   "clipped": 0
+  },
+  "opus 160k": {
+   "tp": -0.23,
+   "sp": -0.23,
+   "clipped": 0
+  }
+ },
+ "Boom Bap Punch @ -9.0 / dry": {
+  "preset": "Boom Bap Punch",
+  "target": -9.0,
+  "gain": 5.94,
+  "lufs": -9.15,
+  "tp": -1.02,
+  "st_max": -7.18,
+  "plr": 8.13,
+  "aac 256k": {
+   "tp": 0.49,
+   "sp": 0.43,
+   "clipped": 3
+  },
+  "fdk-aac 256k": {
+   "tp": -0.76,
+   "sp": -0.83,
+   "clipped": 0
+  },
+  "mp3 320k": {
+   "tp": -0.87,
+   "sp": -0.88,
+   "clipped": 0
+  },
+  "opus 160k": {
+   "tp": -0.2,
+   "sp": -0.22,
+   "clipped": 0
+  }
+ },
+ "Boom Bap Punch @ -9.0 / penta": {
+  "preset": "Boom Bap Punch",
+  "target": -9.0,
+  "gain": 5.99,
+  "lufs": -9.16,
+  "tp": -1.02,
+  "st_max": -7.18,
+  "plr": 8.14,
+  "aac 256k": {
+   "tp": 0.49,
+   "sp": 0.37,
+   "clipped": 2
+  },
+  "fdk-aac 256k": {
+   "tp": -0.76,
+   "sp": -0.83,
+   "clipped": 0
+  },
+  "mp3 320k": {
+   "tp": -0.87,
+   "sp": -0.87,
+   "clipped": 0
+  },
+  "opus 160k": {
+   "tp": -0.21,
+   "sp": -0.22,
+   "clipped": 0
+  }
+ },
+ "Loud Rap / Trap @ -9.0 / suite": {
+  "preset": "Loud Rap / Trap",
+  "target": -9.0,
+  "gain": 5.46,
+  "lufs": -9.01,
+  "tp": -1.02,
+  "st_max": -7.39,
+  "plr": 7.99,
+  "aac 256k": {
+   "tp": -0.66,
+   "sp": -0.67,
+   "clipped": 0
+  },
+  "fdk-aac 256k": {
+   "tp": -0.81,
+   "sp": -0.85,
+   "clipped": 0
+  },
+  "mp3 320k": {
+   "tp": -0.86,
+   "sp": -0.88,
+   "clipped": 0
+  },
+  "opus 160k": {
+   "tp": -0.3,
+   "sp": -0.3,
+   "clipped": 0
+  }
+ },
+ "Loud Rap / Trap @ -9.0 / dry": {
+  "preset": "Loud Rap / Trap",
+  "target": -9.0,
+  "gain": 5.71,
+  "lufs": -9.06,
+  "tp": -1.02,
+  "st_max": -7.17,
+  "plr": 8.04,
+  "aac 256k": {
+   "tp": 0.6,
+   "sp": 0.51,
+   "clipped": 5
+  },
+  "fdk-aac 256k": {
+   "tp": -0.85,
+   "sp": -0.85,
+   "clipped": 0
+  },
+  "mp3 320k": {
+   "tp": -0.91,
+   "sp": -0.93,
+   "clipped": 0
+  },
+  "opus 160k": {
+   "tp": -0.1,
+   "sp": -0.15,
+   "clipped": 0
+  }
+ },
+ "Loud Rap / Trap @ -9.0 / penta": {
+  "preset": "Loud Rap / Trap",
+  "target": -9.0,
+  "gain": 5.79,
+  "lufs": -9.09,
+  "tp": -1.02,
+  "st_max": -7.17,
+  "plr": 8.07,
+  "aac 256k": {
+   "tp": 0.6,
+   "sp": 0.51,
+   "clipped": 5
+  },
+  "fdk-aac 256k": {
+   "tp": -0.81,
+   "sp": -0.81,
+   "clipped": 0
+  },
+  "mp3 320k": {
+   "tp": -0.9,
+   "sp": -0.93,
+   "clipped": 0
+  },
+  "opus 160k": {
+   "tp": -0.31,
+   "sp": -0.31,
+   "clipped": 0
+  }
+ },
+ "Club / CD (-9 LUFS) @ -9.0 / suite": {
+  "preset": "Club / CD (-9 LUFS)",
+  "target": -9.0,
+  "gain": 5.32,
+  "lufs": -9.03,
+  "tp": -0.52,
+  "st_max": -7.41,
+  "plr": 8.51,
+  "aac 256k": {
+   "tp": -0.14,
+   "sp": -0.19,
+   "clipped": 0
+  },
+  "fdk-aac 256k": {
+   "tp": -0.36,
+   "sp": -0.37,
+   "clipped": 0
+  },
+  "mp3 320k": {
+   "tp": -0.35,
+   "sp": -0.42,
+   "clipped": 0
+  },
+  "opus 160k": {
+   "tp": 0.28,
+   "sp": 0.28,
+   "clipped": 30
+  }
+ },
+ "Club / CD (-9 LUFS) @ -9.0 / dry": {
+  "preset": "Club / CD (-9 LUFS)",
+  "target": -9.0,
+  "gain": 5.5,
+  "lufs": -9.07,
+  "tp": -0.52,
+  "st_max": -7.26,
+  "plr": 8.55,
+  "aac 256k": {
+   "tp": 0.16,
+   "sp": 0.11,
+   "clipped": 2
+  },
+  "fdk-aac 256k": {
+   "tp": -0.35,
+   "sp": -0.36,
+   "clipped": 0
+  },
+  "mp3 320k": {
+   "tp": -0.42,
+   "sp": -0.43,
+   "clipped": 0
+  },
+  "opus 160k": {
+   "tp": 0.26,
+   "sp": 0.25,
+   "clipped": 25
+  }
+ },
+ "Club / CD (-9 LUFS) @ -9.0 / penta": {
+  "preset": "Club / CD (-9 LUFS)",
+  "target": -9.0,
+  "gain": 5.51,
+  "lufs": -9.04,
+  "tp": -0.52,
+  "st_max": -7.18,
+  "plr": 8.52,
+  "aac 256k": {
+   "tp": 0.22,
+   "sp": 0.12,
+   "clipped": 2
+  },
+  "fdk-aac 256k": {
+   "tp": -0.31,
+   "sp": -0.31,
+   "clipped": 0
+  },
+  "mp3 320k": {
+   "tp": -0.38,
+   "sp": -0.41,
+   "clipped": 0
+  },
+  "opus 160k": {
+   "tp": 0.31,
+   "sp": 0.3,
+   "clipped": 12
+  }
+ }
+}

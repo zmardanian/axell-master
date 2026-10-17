@@ -14,6 +14,9 @@ elif [ -e "$PUB" ]; then echo "$PUB exists but is not a git repository - remove 
 mkdir -p "$PUB/tests/independent" "$PUB/docs" "$PUB/external/axell-core"
 for f in CMakeLists.txt LICENSE README.md CHANGELOG.md THIRD_PARTY_NOTICES.md; do cp "$f" "$PUB/"; done
 cp -r Source scripts "$PUB/"
+mkdir -p "$PUB/tools" "$PUB/research"
+cp tools/*.cpp "$PUB/tools/"
+cp research/*.py research/*.json research/*.txt "$PUB/research/"
 cp tests/*.cpp tests/lsan.supp tests/report*.txt tests/pluginval-report.txt tests/vst3-validator-report.txt "$PUB/tests/"
 cp tests/independent/*.py tests/independent/audit-report.txt "$PUB/tests/independent/"
 cp -r docs/. "$PUB/docs/"
@@ -25,7 +28,8 @@ echo "axell-core $(git -C "$CORE" rev-parse --short HEAD)" > "$PUB/external/axel
 cat > "$PUB/.gitignore" <<'IGN'
 build/
 build-*/
-tools/
+tools/pluginval*
+tools/vst3-validator
 __pycache__/
 *.user
 IGN
@@ -33,7 +37,7 @@ if [ "$UPDATE" = 1 ]; then
   git -C "$FINAL" diff --quiet && git -C "$FINAL" diff --cached --quiet || { echo "$FINAL has uncommitted changes."; exit 1; }
   git -C "$FINAL" rev-parse -q --verify "refs/tags/v$VER" >/dev/null && { echo "tag v$VER already exists in $FINAL."; exit 1; }
   rsync -a --delete --exclude .git "$PUB/" "$FINAL/"; rm -rf "$(dirname "$PUB")"
-  cd "$FINAL"; git add -A; git commit -qm "Axell Master v$VER"; git tag "v$VER"
+  cd "$FINAL"; git add -A; git commit -qm "Axell Master v$VER" -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"; git tag "v$VER"
   echo "Public repo updated: $FINAL (tag v$VER, NOT pushed)"; exit 0
 fi
 cd "$PUB"
