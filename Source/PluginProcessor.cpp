@@ -56,6 +56,11 @@ APVTS::ParameterLayout MasterProcessor::createLayout()
     // lifting the room and the breaths (the suite's voice decision; Axell Duo Compressor 3.0's method). Off by default
     // (a mix master); the vocal presets turn it on
     p.push_back (std::make_unique<AudioParameterBool> (ParameterID { "voiceHold", 3 }, "Voice Hold", false));
+    // 4.0 (appended): ESS HOLD - on a vocal (bus) the limiter holds the word's gain through the voice's esses instead
+    // of releasing and lifting them above the vowels (the suite's sibilance network; Axell Duo Compressor 4.0's
+    // method). Off by default (a mix master; states saved before 4.0 therefore play as they did); the vocal presets
+    // turn it on
+    p.push_back (std::make_unique<AudioParameterBool> (ParameterID { "essHold", 4 }, "Ess Hold", false));
     return { p.begin(), p.end() };
 }
 
@@ -79,6 +84,7 @@ MasterProcessor::MasterProcessor()
     pCompare = apvts.getRawParameterValue ("compare");
     pCodec = apvts.getRawParameterValue ("codecCheck");
     pVoiceHold = apvts.getRawParameterValue ("voiceHold");
+    pEssHold = apvts.getRawParameterValue ("essHold");
     startTimerHz (20);
 }
 
@@ -105,6 +111,7 @@ axm::Params MasterProcessor::readParams() const
     p.dither = juce::roundToInt (pDither->load());
     p.compare = pCompare->load() > 0.5f;
     p.voiceHold = pVoiceHold->load() > 0.5f;
+    p.essHold = pEssHold->load() > 0.5f;
     return p;
 }
 
@@ -215,6 +222,7 @@ void MasterProcessor::applyParams (const axm::Params& p, int target)
     set ("dither", (float) p.dither);
     set ("target", (float) target);
     set ("voiceHold", p.voiceHold ? 1.0f : 0.0f);
+    set ("essHold", p.essHold ? 1.0f : 0.0f);
 }
 
 int MasterProcessor::getNumPrograms() { return (int) axm::factoryPresets().size(); }

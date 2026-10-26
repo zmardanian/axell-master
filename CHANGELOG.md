@@ -1,5 +1,21 @@
 # Changelog
 
+## 4.0.0 - 2026-10-26
+- **ESS HOLD (new, for a vocal or vocal bus):** through each ess of the voice the limiter holds the gain of the word
+  it belongs to instead of releasing, so the drive no longer pushes the S, SH and CH sounds above the vowels; after the
+  ess it glides back (10 ms) to exactly what 3.0 does. On 28 of the artist's raw takes with the vocal presets driven
+  +12 dB, the esses' lift over their word: Vocal Peak Catcher **+2.76 -> +0.40 dB**, Booth Rap Vocal Bus +2.29 -> +0.48,
+  Vocal Upfront +2.88 -> +0.87, Ad-libs +3.73 -> +1.46; vowels -0.01..-0.08 dB, pauses and true peak unchanged. Uses the
+  suite's sibilance detector (Axell Velvet's LIVE network, via axell-core); no added latency. On in the vocal presets,
+  off by default and for projects saved before 4.0, which render bit-identically to 3.0.0 (DECISIONS M19).
+- **Layout:** VOICE HOLD and ESS HOLD sit as two full-width switches in the OUTPUT column.
+- Verified: DSP 391 checks at 44.1 / 48 / 96 kHz (new: ESS HOLD on a synthetic voice - lift removed, vowels 0.00 dB,
+  ceiling held, latency unchanged; CPU with both holds on, 16x: 8.1 % of one core), plugin 66 (parameter 15 `essHold`,
+  version hint 4; a 3.x project opens with it off), axell-core CoreTests 143/143 (flag 2: hold, return to the 3.0
+  path within 30 ms, all-zero flags bit-identical), ASan + UBSan clean, independent audit 29/29 (new: 3.0.0 sessions
+  render bit-identically to the 3.0.0 bundle; ESS HOLD on keeps latency, level and the ceiling), pluginval strictness
+  10, Steinberg's VST3 validator 47/47.
+
 ## 3.0.0 - 2026-10-26
 - **VOICE HOLD (new, for a vocal or vocal bus):** in the pauses of the voice the limiter holds its gain at the voice's
   level instead of releasing, so the drive no longer lifts the room, breaths and headphone bleed between phrases.

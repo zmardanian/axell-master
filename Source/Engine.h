@@ -14,6 +14,7 @@
 #include <axell/dsp/Loudness.h>
 #include <axell/dsp/MasterLimiter.h>
 #include <axell/dsp/VoicePresence.h>   // 3.0 VOICE HOLD: the suite's shared voice decision (Axell Gate's)
+#include <axell/dsp/SibilanceDetector.h> // 4.0 ESS HOLD: the suite's sibilance network (Axell Velvet 3.0 LIVE, causal)
 #include <axell/dsp/Oversampler.h>
 #include <axell/dsp/TruePeak.h>
 
@@ -43,6 +44,7 @@ struct Params
     int   osLog2 = 4;              // clipper oversampling 1x / 2x / 4x / 8x / 16x (16x default: aliasing < -99 dBc)
     int   dither = 0;              // 0 off, 1 24-bit, 2 16-bit TPDF, 3 16-bit noise-shaped
     bool  voiceHold = false;       // 3.0: in a vocal's pauses the limiter holds its gain (vocal-bus presets turn it on)
+    bool  essHold = false;         // 4.0: through a vocal's esses the limiter holds the word's gain (vocal-bus presets)
     bool  compare = false;         // the unprocessed input at the output's loudness
     bool  bypass = false;          // host bypass (latency-compensated)
 };
@@ -107,6 +109,7 @@ public:
         cmpK = 1.0f - onePole (0.25f, fs);
         hopLen = std::max (1, (int) std::lround (0.01 * fs));
         voice.prepare (fs);
+        essDet.prepare (fs, axell::voice::DetectorConfig::live());
         pauseSpan = (int) (10.0 * fs);
         sinceVoice = pauseSpan;
         setParams (params);
@@ -129,6 +132,8 @@ public:
         lim.reset();
         dither.reset();
         voice.reset();
+        essDet.reset();
+        essP = 0.0f;
         sinceVoice = pauseSpan;
         for (auto& r : dryRing)
             std::fill (r.begin(), r.end(), 0.0f);
@@ -279,18 +284,39 @@ private:
         control (n);
 
         // 0b. 3.0 VOICE HOLD: the shared voice decision on the input (causal, ~10 ms); a pause only within 10 s of a voice
-        if (params.voiceHold)
+        //     4.0 ESS HOLD: the shared sibilance network on the input (causal, its frame 6 ms behind) marks the esses
+        //     (flag 2; a pause wins)
+        if (params.essHold && ! essLive)
+        {
+            essDet.reset();   // switched on: start from silence, not from where it stopped
+            essP = 0.0f;
+        }
+        essLive = params.essHold;
+        if (params.voiceHold || params.essHold)
             for (int i = 0; i < n; ++i)
             {
                 float m = 0.0f;
                 for (int c = 0; c < nCh; ++c)
                     m += io[c][i];
-                voice.push (m / (float) nCh);
-                if (voice.voice())
-                    sinceVoice = 0;
-                else if (sinceVoice < pauseSpan)
-                    ++sinceVoice;
-                pauseFlags[(size_t) i] = (! voice.voice() && sinceVoice < pauseSpan) ? 1 : 0;
+                m /= (float) nCh;
+                uint8_t f = 0;
+                if (params.voiceHold)
+                {
+                    voice.push (m);
+                    if (voice.voice())
+                        sinceVoice = 0;
+                    else if (sinceVoice < pauseSpan)
+                        ++sinceVoice;
+                    f = (! voice.voice() && sinceVoice < pauseSpan) ? 1 : 0;
+                }
+                if (params.essHold)
+                {
+                    if (essDet.push (m))
+                        essP = essDet.out().p;
+                    if (f == 0 && essP > kEssHoldP)   // the hop's decision (smoothing it held the gain into the next vowel)
+                        f = 2;
+                }
+                pauseFlags[(size_t) i] = f;
             }
 
         // 1. input gain, clipper (oversampled)
@@ -320,7 +346,7 @@ private:
             hopClip = std::max (hopClip, 20.0f * std::log10 (std::max (preMax, postMax) / postMax));
 
         // 2. limiter, dither
-        hopLim = std::max (hopLim, lim.process (io, nCh, n, params.voiceHold ? pauseFlags.data() : nullptr));
+        hopLim = std::max (hopLim, lim.process (io, nCh, n, (params.voiceHold || params.essHold) ? pauseFlags.data() : nullptr));
         dither.process (io, nCh, n);
 
         // 3. compare / bypass / fade (aligned to the full latency); meters on the final output
@@ -400,6 +426,10 @@ private:
     bool clipOn = false;
     float clipThr = 1.0f, clipKnee = 0.0f, inGain = 1.0f, inTarget = 1.0f, smoothK = 0.001f, switchK = 0.002f;
     axell::voice::VoicePresence voice;
+    axell::voice::SibilanceDetector essDet;
+    float essP = 0.0f;
+    bool essLive = false;
+    static constexpr float kEssHoldP = 0.5f;   // the sibilance probability that counts as an ess (Duo 4.0's, DECISIONS M19)
     std::array<uint8_t, kChunk> pauseFlags {};
     int pauseSpan = 480000, sinceVoice = 480000;
     float cmpAmt = 0.0f, cmpTarget = 0.0f, cmpGain = 1.0f, cmpK = 0.001f, loudK = 0.001f, bypassAmt = 0.0f, bypassTarget = 0.0f;

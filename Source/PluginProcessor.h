@@ -92,6 +92,7 @@ private:
     std::atomic<float>* pDither = nullptr;  std::atomic<float>* pTarget = nullptr; std::atomic<float>* pCompare = nullptr;
     std::atomic<float>* pCodec = nullptr;
     std::atomic<float>* pVoiceHold = nullptr;
+    std::atomic<float>* pEssHold = nullptr;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MasterProcessor)
 };

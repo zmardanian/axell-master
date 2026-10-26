@@ -254,6 +254,47 @@ out = run_all(rs, {r.name: prog for r in rs}, jobname="codec")
 d = np.abs(out["ccon"] - out["ccoff"]).max()
 report("codec check on vs off: bit-identical audio (it only measures, on its own thread)", d == 0.0, f"max |difference| {d:.3g}")
 
+# ---------------------------------------------------------------- 11. 4.0: ESS HOLD - 3.0.0 sessions unchanged
+def voice_like(fs, secs, seed=4):
+    """stereo test voice: 0.22 s vowels (harmonics of 120-160 Hz through two formants) and 0.1 s esses (noise around 7 kHz),
+    1.6 s phrases, 0.8 s pauses (written here, independent of the plugin's own test signals)"""
+    rng = np.random.default_rng(seed); n = int(secs * fs); t = np.arange(n) / fs
+    ph = t % 2.4; syl = ph % 0.32; on = (ph > 0.2) & (ph < 1.8)
+    f0 = 140 + 20 * np.sin(2 * np.pi * 0.6 * t); phase = 2 * np.pi * np.cumsum(f0) / fs
+    v = np.zeros(n)
+    for h in range(1, 40):
+        f = h * f0; w = np.exp(-((f - 650) / 250) ** 2) + 0.6 * np.exp(-((f - 1150) / 300) ** 2) + 0.2 * np.exp(-((f - 2600) / 500) ** 2)
+        v += w * np.sin(h * phase) / np.sqrt(h)
+    b, a = sg.butter(4, [5500 / (fs / 2), 9000 / (fs / 2)], "band")
+    e = sg.lfilter(b, a, rng.standard_normal(n))
+    env_v = np.clip(np.minimum(syl, 0.22 - syl) / 0.015, 0, 1) * (syl < 0.22)
+    env_e = np.sin(np.pi * np.clip((syl - 0.22) / 0.1, 0, 1)) * (syl >= 0.22)
+    x = (0.12 * env_v * v + 0.35 * env_e * e) * on + 1e-4 * rng.standard_normal(n)
+    return np.repeat(x[:, None], 2, 1)
+
+V3 = os.environ.get("AXELL_V3_VST3", os.path.expanduser("~/axell-master-release/AxellMaster-3.0.0-linux-x86_64/Axell Master.vst3"))
+if os.path.isdir(V3):
+    fs = 48000
+    vx = voice_like(fs, 6.0)
+    cases = {"vocal bus +12 dB, VOICE HOLD on": {"Input": "12", "Ceiling": "-6", "Voice Hold": "On"},
+             "loud, clipper 45 %, VOICE HOLD off": {"Input": "16", "Clip": "45", "Style": "Loud", "Voice Hold": "Off"}}
+    q3 = [Run(f"m3_{i}", fs, sets=c) for i, c in enumerate(cases.values())]
+    q4 = [Run(f"m4_{i}", fs, sets=dict(c, **{"Ess Hold": "Off"})) for i, c in enumerate(cases.values())]
+    q5 = [Run(f"m5_{i}", fs, sets=dict(c, **{"Ess Hold": "On"})) for i, c in enumerate(cases.values())]
+    o3 = run_all(q3, {r.name: vx for r in q3}, jobname="m3", plugin=V3)
+    o4 = run_all(q4 + q5, {r.name: vx for r in q4 + q5}, jobname="m4")
+    for i, k in enumerate(cases):
+        d = np.abs(o3[f"m3_{i}"] - o4[f"m4_{i}"]).max()
+        report(f"3.0.0 session compatibility: '{k}', ESS HOLD off renders like Axell Master 3.0.0",
+               d == 0.0 and q3[i].latency == q4[i].latency, f"max |difference| {d:.3g}, latency {q3[i].latency} / {q4[i].latency}")
+        on, off = o4[f"m5_{i}"], o4[f"m4_{i}"]
+        lv = 10 * np.log10(np.mean(on ** 2) / np.mean(off ** 2))
+        report(f"ESS HOLD on: '{k}': same latency, level within 0.5 dB, peaks under the ceiling",
+               q5[i].latency == q4[i].latency and abs(lv) < 0.5 and db(true_peak(on)) <= float(cases[k].get("Ceiling", "-1")) + 0.1,
+               f"latency {q5[i].latency} / {q4[i].latency}, level {lv:+.2f} dB, true peak {db(true_peak(on)):.2f} dBTP (ceiling {cases[k].get('Ceiling', '-1')})")
+else:
+    report("3.0.0 compatibility", False, f"3.0.0 bundle not found at {V3}")
+
 fails = [r for r in results if not r[1]]
 print(f"\nAUDIT: {len(results) - len(fails)}/{len(results)} pass ({__import__('time').time() - AUDIT_START:.0f} s)")
 sys.exit(len(fails))

@@ -34,6 +34,9 @@ const char* voiceHold = "VOICE HOLD (for a vocal or vocal bus): in the pauses of
                         "voice's level instead of releasing, so the drive no longer lifts the room, the breaths and the "
                         "headphone bleed between phrases. Uses Axell Gate's voice detector; no added latency. Leave it off "
                         "on a mix or a beat (the detector is trained on voices).";
+const char* essHold = "ESS HOLD (for a vocal or vocal bus): through the esses of the voice the limiter holds the gain of the "
+                      "word they belong to instead of releasing, so the drive no longer pushes the S, SH and CH sounds above "
+                      "the vowels. Uses Axell Velvet's sibilance detector; no added latency. Leave it off on a mix or a beat.";
 const char* compare = "COMPARE plays the unprocessed mix at the same loudness as the master (measured like a loudness meter). "
                       "Louder always sounds better - this shows what the processing really does.";
 const char* history = "The last seconds: peaks going in after GAIN (grey) and coming out (white), short-term loudness "
@@ -504,11 +507,12 @@ MasterEditor::MasterEditor (MasterProcessor& p) : AudioProcessorEditor (&p), pro
     dither.bind (proc.apvts, "dither", tip::dither);
     compare.bind (proc.apvts, "compare", tip::compare);
     voiceHold.bind (proc.apvts, "voiceHold", tip::voiceHold);
+    essHold.bind (proc.apvts, "essHold", tip::essHold);
     history.setTooltip (tip::history);
     meters.setTooltip (tip::gr);
     curve.setTooltip (tip::curve);
     for (auto* c : std::initializer_list<juce::Component*> { &presetPrev, &presetNext, &presetName, &presetSave, &slotA, &slotB, &slotCopy,
-                                                            &compare, &voiceHold, &history, &loudness, &gain, &ceiling, &release, &look, &link,
+                                                            &compare, &voiceHold, &essHold, &history, &loudness, &gain, &ceiling, &release, &look, &link,
                                                             &style, &clip, &shape, &os, &dither, &meters, &curve, &codecView })
         content.addAndMakeVisible (c);
     for (auto* b : { &slotA, &slotB })
@@ -609,16 +613,18 @@ void MasterEditor::layout()
         a.removeFromRight (12);
         osLabel = a.removeFromTop (16);
         os.setBounds (a.removeFromTop (28));
-        a.removeFromTop (14);
+        a.removeFromTop (8);
         ditherLabel = a.removeFromTop (16);
         dither.setBounds (a.removeFromTop (28));
         a.removeFromBottom (22);
-        compare.setBounds (a.removeFromBottom (34));
-        compareLabel = a.removeFromBottom (20);
-        a.removeFromBottom (6);
-        voiceHold.setBounds (a.removeFromBottom (30));
-        a.removeFromTop (12);
-        a.removeFromBottom (8);
+        compare.setBounds (a.removeFromBottom (30));
+        compareLabel = a.removeFromBottom (18);
+        a.removeFromBottom (4);
+        essHold.setBounds (a.removeFromBottom (26));
+        a.removeFromBottom (3);
+        voiceHold.setBounds (a.removeFromBottom (26));
+        a.removeFromTop (6);
+        a.removeFromBottom (4);
         codecView.setBounds (a);
     }
 }

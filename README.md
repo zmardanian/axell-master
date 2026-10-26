@@ -15,7 +15,18 @@ master from clipping after YouTube or Spotify encode it. Built for rap, trap and
 
 ![Axell Master](docs/screenshots/master-100pct.png)
 
-## What's new in 3.0
+## What's new in 4.0
+
+- **ESS HOLD (for a vocal or vocal bus)**: driving a vocal into a limiter lifts its esses - between a vowel and its ess
+  the limiter starts to release, and the S, SH and CH sounds come up against their own word. With ESS HOLD the
+  suite's sibilance detector (Axell Velvet's, zero latency) marks the esses and the limiter holds the word's gain
+  through each one, then glides back (10 ms) to exactly what 3.0 does - Axell Duo Compressor 4.0's method, built into
+  the shared core limiter (attack and ceiling untouched). On 28 of the artist's raw takes, Vocal Peak Catcher driven
+  +12 dB: esses over their word **+2.76 -> +0.40 dB** (Booth Rap Vocal Bus +2.29 -> +0.48, Vocal Upfront +2.88 -> +0.87,
+  Ad-libs +3.73 -> +1.46); vowels within 0.1 dB, pauses and peaks unchanged. On in the vocal presets, off by default;
+  projects from before 4.0 sound exactly as before.
+
+## What was new in 3.0
 
 - **VOICE HOLD (for a vocal or vocal bus)**: driving a vocal into the limiter lifts the room, breaths and headphone
   bleed between phrases by as much as the words are limited. With VOICE HOLD the suite's voice detector (Axell Gate's)
@@ -63,6 +74,9 @@ limiter gain reduction.
 - **VOICE HOLD** (3.0, for a vocal or vocal bus): in the voice's pauses the limiter holds its gain instead of
   releasing, so the drive does not lift the room and the breaths (Vocal Peak Catcher +12 dB on a real take: pauses
   +8.1 -> +2.7 dB re the voice). On in the vocal presets; leave it off on a mix or a beat.
+- **ESS HOLD** (4.0, for a vocal or vocal bus): through each ess the limiter holds the word's gain instead of
+  releasing, so the drive does not push the esses above the vowels (Vocal Peak Catcher +12 dB, 28 real takes: esses
+  over their word +2.76 -> +0.40 dB, vowels within 0.02 dB). On in the vocal presets; leave it off on a mix or a beat.
 - **COMPARE** plays the unprocessed mix at the master's loudness, so you hear what the processing does and not just
   "louder". In the audit it matched within 0.03 LU.
 - **DITHER** for the final export: 24-bit or 16-bit TPDF, or 16-bit shaped. The shaped mode uses the 9th-order
@@ -114,10 +128,11 @@ name. User presets and A/B too. Presets never change GAIN: how hard to drive dep
 | Real-time safety | no allocation, lock or I/O in the audio path (allocation counter in the test suite) |
 | VOICE HOLD, a real take (vocal presets driven +18 dB) | pauses re the voice: Peak Catcher +13.9 -> +4.6 dB, Sung Vocal +6.8 -> +0.7, Booth Rap +6.1 -> +2.5; the voice's limiting within 0.2 dB |
 | VOICE HOLD, synthetic voice (all rates) | pause lift 6.7 -> 0.1 dB, voice level unchanged, the ceiling held |
+| ESS HOLD, 28 real takes (vocal presets driven +12 dB) | esses over their word: Peak Catcher +2.76 -> +0.40 dB, Booth Rap +2.29 -> +0.48, Upfront +2.88 -> +0.87, Ad-libs +3.73 -> +1.46; vowels within 0.1 dB, pauses and true peak unchanged |
 
 All of these come from:
 - the automated suites: `tests/`, 378 DSP checks at 44.1 / 48 / 96 kHz (the codec check also at 88.2 kHz) plus 61
-  plugin checks; the core adds 133 checks (the limiter's VOICE HOLD included);
+  plugin checks; the core adds 143 checks (the limiter's VOICE HOLD and ESS HOLD included);
 - an independent black-box audit through a VST3 host (`tests/independent/master_audit.py`, 25 checks, analysis from
   textbook definitions);
 - the studies in `research/`: real masters through the streaming codecs, SAFE's calibration, every preset on real
@@ -135,16 +150,17 @@ The reports are in `tests/`; the reasoning behind every design choice is in [doc
 | **1.0.0** | 2026-10-15 | Oversampled soft clipper (16x default) into a true-peak limiter with four program-dependent release styles and a bass-aware hold; BS.1770-4 / EBU R128 meter; targets with LEARN; level-matched COMPARE; 9th-order F-weighted dither | Ceiling within 0.02 dB of -1 dBTP on mixes driven +12-14 dB (independent reconstruction); clipper aliasing -106 dBc at 16x; 40-50 Hz bass at 6 dB of limiting -139 dB THD+N; EBU Tech 3341/3342 conformance |
 | **2.0.0** | 2026-10-17 | STREAMING CODECS: the master through real Opus and Vorbis encoders while it plays (4 frame offsets, own thread); SAFE lowers the ceiling until both decode at -0.3 dBTP; 20 presets checked on real material | 1.0's -1 dBTP masters decoded at up to +1.1 dBTP (Vorbis); after SAFE: 0 clipped samples on 9 loud masters with Opus, Vorbis 160/320, FDK AAC 256, MP3 320 |
 | **3.0.0** | 2026-10-26 | VOICE HOLD for a vocal bus (Gate's voice detector + Duo 3.0's method in the shared core limiter); ESS GUARD studied and rejected (no net gain on the artist's mix, DECISIONS M18); Axell's Dojo look | Real take: pauses +8.1 -> +2.7 dB (+12 dB drive), voice unchanged; 378 DSP + 61 plugin checks, ASan clean, audit 25/25, pluginval L10, validator 47/47 |
+| **4.0.0** | 2026-10-26 | ESS HOLD for a vocal bus (Velvet's sibilance detector + Duo 4.0's method in the shared core limiter: the word's gain through each ess, a shadow of the 3.0 path to return to) | 28 takes, +12 dB: esses over their word +2.76 -> +0.40 dB (Peak Catcher; +2.29..+3.73 -> +0.40..+1.46 over four vocal presets), vowels within 0.1 dB; 391 DSP + 66 plugin + 143 core checks, ASan clean, audit 29/29 (3.0 sessions bit-identical), pluginval L10, validator 47/47 |
 
 Every design decision with its measurement: [docs/DECISIONS.md](docs/DECISIONS.md); all changes: [CHANGELOG.md](CHANGELOG.md).
 
 ## Install (Linux)
 
-Download `AxellMaster-3.0.0-linux-x86_64.tar.gz` from the
+Download `AxellMaster-4.0.0-linux-x86_64.tar.gz` from the
 [latest release](https://github.com/zmardanian/axell-master/releases/latest) (optional: `sha256sum -c SHA256SUMS.txt`), then:
 
-    tar xzf AxellMaster-3.0.0-linux-x86_64.tar.gz
-    cd AxellMaster-3.0.0-linux-x86_64
+    tar xzf AxellMaster-4.0.0-linux-x86_64.tar.gz
+    cd AxellMaster-4.0.0-linux-x86_64
     ./install.sh
 
 The installer copies `Axell Master.vst3` to `~/.vst3`. Then in REAPER: Options > Preferences > Plug-ins > VST >

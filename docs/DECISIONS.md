@@ -233,3 +233,37 @@ applies its values and keeps GAIN).
   "crunch" on the esses but +0.5 dB elsewhere (more drive needed); Loud Rap / Trap slightly worse on the esses; no
   effect where the clipper is light. No net gain.
 
+
+## M19 - 4.0: ESS HOLD for a vocal bus (Axell Duo Compressor 4.0's method in the core limiter)
+- **The problem.** A limiter driven by a voice lifts the esses above the vowels: between a vowel and its ess the
+  release starts, so the S, SH and CH sounds come up against their own word. Measured on 28 of the artist's raw takes
+  (each through the suite's "Amber" vocal chain, then Master's vocal presets driven +12 dB, VOICE HOLD on as the presets
+  have it): the esses' level over the vowels of their own word (the loudest vowel frame within +-150 ms) rose
+  **+2.29..+3.73 dB** (medians per preset). In the artist's own session these lifts after the de-esser added up to
+  8 dB hotter esses than the dry take. M18's ESS GUARD was a different idea (easing the clipper on esses, for crunch)
+  and is still not shipped.
+- **The answer** (the same as Duo 4.0's, in axell-core's MasterLimiter): the suite's sibilance network (Axell Velvet
+  3.0's LIVE detector, causal, its decision every 2 ms, 6 ms behind) marks the esses with flag 2; through an ess the
+  release stops and the gain glides (12.5 ms) to the word's own - its recent deepest reduction (decaying with 0.3 s). A
+  shadow plays the 3.0 path meanwhile and after the ess the gain glides back to it in 10 ms, so the next vowel is
+  limited exactly as in 3.0. The attack and the ceiling guarantee are untouched; flags 0 / 1 only: bit-identical to 3.0
+  (CoreTests). A pause (flag 1) wins over an ess.
+- **Measured** (28 takes, the vocal presets at +12 dB; on minus off, medians):
+
+  | preset | esses over their word, 3.0 -> 4.0 | vowels | vowels just after esses | pauses, true peak |
+  |---|---|---|---|---|
+  | Vocal Peak Catcher | +2.76 -> +0.40 dB | -0.01 dB | -0.02 dB | unchanged |
+  | Booth Rap Vocal Bus | +2.29 -> +0.48 dB | -0.08 dB | -0.13 dB | unchanged |
+  | Vocal Upfront (Dense) | +2.88 -> +0.87 dB | -0.07 dB | -0.12 dB | unchanged |
+  | Ad-libs / Background Vocals | +3.73 -> +1.46 dB | -0.04 dB | -0.10 dB | unchanged |
+
+  Word window 0.3 s vs 0.15 s: 0.2-0.4 dB more of the lift removed, at most 0.03 dB more on the vowels. Without the
+  shadow's return the next vowel lost up to 0.5 dB (DSP suite, synthetic voice); with it 0.00 dB.
+- **Limits.** The clipper has no release, so in the clipping presets what remains is the clipper's own peak reduction:
+  "Boom Bap Loud, Codec-Ready (-9)" driven to -9 LUFS on a vocal: +3.37 -> +2.99 dB. That preset is a mix master
+  (ESS HOLD off there); on a vocal, use a vocal preset.
+- **Off by default**, on in the vocal presets (where VOICE HOLD is): the network fires on hi-hats on 0.2-4 % of a
+  beat's 2 ms frames, and a mix should not change at all. Projects saved before 4.0 have no `essHold` and open with
+  it off - they render bit-identically to 3.0.0 (independent audit).
+- **Reproduce:** the study scripts (stage-by-stage renders of the suite's chains, the measures, the A/B) are in Axell
+  Duo Compressor's repository, `docs/research/ess_hold_study`; Master's side uses `tools/MasterRender --ess-hold 0|1`.

@@ -85,15 +85,16 @@ int main()
     //== 1. frozen parameter IDs and order (automation uses the index), version hints
     {
         MasterProcessor p;
-        // 1.0's twelve keep their index and version hint 1; 2.0 appends codecCheck (version hint 2), 3.0 voiceHold (3)
+        // 1.0's twelve keep their index and version hint 1; 2.0 appends codecCheck (version hint 2), 3.0 voiceHold (3),
+        // 4.0 essHold (4)
         const juce::StringArray frozen { "input", "clip", "clipShape", "ceiling", "release", "style", "lookahead", "link",
-                                         "os", "dither", "target", "compare", "codecCheck", "voiceHold" };
+                                         "os", "dither", "target", "compare", "codecCheck", "voiceHold", "essHold" };
         auto& params = p.getParameters();
         check (params.size() == frozen.size(), "parameter count = " + juce::String (frozen.size()));
         for (int i = 0; i < params.size() && i < frozen.size(); ++i)
         {
             auto* wp = dynamic_cast<juce::AudioProcessorParameterWithID*> (params[i]);
-            const int hint = i < 12 ? 1 : i < 13 ? 2 : 3;
+            const int hint = i < 12 ? 1 : i < 13 ? 2 : i < 14 ? 3 : 4;
             check (wp != nullptr && wp->getParameterID() == frozen[i] && wp->getVersionHint() == hint,
                    "parameter index " + juce::String (i) + " is '" + frozen[i] + "' (version hint " + juce::String (hint) + ")");
         }
@@ -104,6 +105,13 @@ int main()
             for (const auto& f : axm::factoryPresets())
                 ok = ok && f.params.voiceHold == (juce::String (f.category) == "VOCAL BUS" || juce::String (f.name).contains ("Vocal"));
             check (ok, "factory presets: VOICE HOLD on exactly for the vocal presets");
+        }
+        check (getParam (p, "essHold") == 0.0f, "default: ESS HOLD off (a mix master; the vocal presets turn it on)");
+        {
+            bool ok = true;
+            for (const auto& f : axm::factoryPresets())
+                ok = ok && f.params.essHold == f.params.voiceHold;
+            check (ok, "factory presets: ESS HOLD on exactly where VOICE HOLD is (the vocal presets)");
         }
         check (getParam (p, "ceiling") == -1.0f && getParam (p, "os") == 4.0f && getParam (p, "target") == 1.0f
                    && getParam (p, "clip") == 0.0f && getParam (p, "input") == 0.0f,
@@ -134,6 +142,32 @@ int main()
             }
         check (same, "state restore: all parameter values identical");
         check (b.getPresetName() == "My Album Master", "state restore: preset name restored");
+        // ESS HOLD round trip, and a 3.x vocal-bus project (VOICE HOLD on, no essHold saved) opens with ESS HOLD off
+        {
+            MasterProcessor c;
+            setParam (c, "voiceHold", 1.0f);
+            setParam (c, "essHold", 1.0f);
+            juce::MemoryBlock st;
+            c.getStateInformation (st);
+            MasterProcessor d;
+            d.setStateInformation (st.getData(), (int) st.getSize());
+            check (getParam (d, "essHold") == 1.0f, "state restore: ESS HOLD on restored");
+            auto xml = juce::AudioProcessor::getXmlFromBinary (st.getData(), (int) st.getSize());
+            if (xml != nullptr)
+                for (auto* e = xml->getFirstChildElement(); e != nullptr; e = e->getNextElement())
+                    if (e->getStringAttribute ("id") == "essHold")
+                    {
+                        xml->removeChildElement (e, true);
+                        break;
+                    }
+            juce::MemoryBlock old;
+            if (xml != nullptr)
+                juce::AudioProcessor::copyXmlToBinary (*xml, old);
+            MasterProcessor q;
+            q.setStateInformation (old.getData(), (int) old.getSize());
+            check (xml != nullptr && getParam (q, "essHold") == 0.0f && getParam (q, "voiceHold") == 1.0f,
+                   "3.x project (no essHold): ESS HOLD off, VOICE HOLD kept (it sounds as it did)");
+        }
 
         prepare (a);
         prepare (b);

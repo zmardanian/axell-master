@@ -4,6 +4,12 @@ PASS  VOICE HOLD lowers the pauses' lift by @48000                              
 PASS  VOICE HOLD: voice level unchanged @48000                                                                 -0.0005 dB  [-0.75 .. 0.75]
 PASS  VOICE HOLD: sample peak under the ceiling @48000                                                         -1.0200 dBFS  [-60 .. -1]
 PASS  VOICE HOLD: latency unchanged @48000                                                                      0.0000 smp  [0 .. 0]
+INFO  ESS HOLD off: esses re vowels (lift) @48000                                                               0.5843 dB
+INFO  ESS HOLD on: esses re vowels (lift) @48000                                                               -0.2815 dB
+PASS  ESS HOLD removes >= 60 % of the esses' lift (margin, dB) @48000                                           0.5152 dB  [0 .. 60]
+PASS  ESS HOLD: vowel level unchanged @48000                                                                   -0.0000 dB  [-0.75 .. 0.75]
+PASS  ESS HOLD: sample peak under the ceiling @48000                                                           -1.0200 dBFS  [-60 .. -1]
+PASS  ESS HOLD: latency unchanged @48000                                                                        0.0000 smp  [0 .. 0]
 PASS  silence in -> exactly 0 out (defaults) @48000                                                             0.0000   [0 .. 0]
 PASS  below the ceiling, os 1x, lookahead 0.5 ms: output = input delayed by the latency (< 0.4 fs) @48000    -145.3494 dBFS  [-600 .. -95]
 PASS  latency reported = oversampler + 64 + lookahead (1x, 0.5 ms) @48000                                     246.0000 samples  [246 .. 246]
@@ -151,8 +157,8 @@ PASS  codec check: audio it could not keep up with is flagged incomplete        
 PASS  codec check (worker thread): measured the whole 5 s                                                       4.9493 s  [4.9 .. 5.01]
 PASS  codec check (worker thread): -3 dBFS sine decodes at -3 dBTP                                             -2.4117 dBTP  [-3.6 .. -2.2]
 PASS  codec check (worker thread): nothing dropped                                                              0.0000   [0 .. 0]
-ALL PASS: 150 of 150 checks passed (374.6 s)
-PASS  parameter count = 14
+ALL PASS: 154 of 154 checks passed (437.3 s)
+PASS  parameter count = 15
 PASS  parameter index 0 is 'input' (version hint 1)
 PASS  parameter index 1 is 'clip' (version hint 1)
 PASS  parameter index 2 is 'clipShape' (version hint 1)
@@ -167,12 +173,17 @@ PASS  parameter index 10 is 'target' (version hint 1)
 PASS  parameter index 11 is 'compare' (version hint 1)
 PASS  parameter index 12 is 'codecCheck' (version hint 2)
 PASS  parameter index 13 is 'voiceHold' (version hint 3)
+PASS  parameter index 14 is 'essHold' (version hint 4)
 PASS  default: codec check on
 PASS  default: VOICE HOLD off (a mix master; the vocal presets turn it on)
 PASS  factory presets: VOICE HOLD on exactly for the vocal presets
+PASS  default: ESS HOLD off (a mix master; the vocal presets turn it on)
+PASS  factory presets: ESS HOLD on exactly where VOICE HOLD is (the vocal presets)
 PASS  defaults: ceiling -1 dBTP, 16x, target -14 LUFS, clipper off, input 0 dB
 PASS  state restore: all parameter values identical
 PASS  state restore: preset name restored
+PASS  state restore: ESS HOLD on restored
+PASS  3.x project (no essHold): ESS HOLD off, VOICE HOLD kept (it sounds as it did)
 PASS  state restore: restored instance renders bit-identical audio (max diff 0)
 PASS  state restore: latency = 8x + 64 + 3.25 ms lookahead (432 samples)
 PASS  raw-value state restore (pluginval scenario), 50 random rounds
@@ -213,4 +224,4 @@ PASS  SAFE: ceiling lowered to -2.7 dBTP
 PASS  SAFE: the codec measurement restarts
 PASS  codec check: COMPARE audio is not measured
 PASS  codec check off: nothing measured
-ALL PASS: 61 of 61 plugin checks passed
+ALL PASS: 66 of 66 plugin checks passed

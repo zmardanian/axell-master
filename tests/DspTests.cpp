@@ -243,6 +243,52 @@ int main (int argc, char** argv)
             check ("VOICE HOLD: sample peak under the ceiling" + r, db (tp), -60.0, -1.0, "dBFS");
             check ("VOICE HOLD: latency unchanged" + r, eOn->getLatencySamples() - eOff->getLatencySamples(), 0, 0, "smp");
         }
+        // 0b. 4.0 ESS HOLD (the same vocal bus, VOICE HOLD on as in the vocal presets): esses no longer lifted, vowels the same
+        {
+            const auto v = voiceTake (fs, 12.0, -10.0, -70.0);
+            Params p;
+            p.inputDb = 24.0f;
+            p.osLog2 = 2;
+            p.voiceHold = true;
+            auto eOff = make (fs, p);
+            const auto off = run (*eOff, Buf { v, v });
+            p.essHold = true;
+            auto eOn = make (fs, p);
+            const auto on = run (*eOn, Buf { v, v });
+            const int L = eOn->getLatencySamples();
+            auto al = [L] (std::vector<float> y) { y.erase (y.begin(), y.begin() + L); return y; };
+            const auto yo = al (off[0]), yn = al (on[0]);
+            // per 0.32 s syllable of each phrase: vowel 0.02-0.20 s, ess 0.24-0.31 s
+            auto part = [fs] (const std::vector<float>& x, double lo, double hi)
+            {
+                double e = 0.0;
+                size_t k = 0;
+                for (size_t i = (size_t) (2.4 * fs); i < x.size(); ++i)
+                {
+                    const double ph = std::fmod ((double) i / fs, 2.4);
+                    if (ph < 0.2 || ph >= 1.8)
+                        continue;
+                    const double syl = std::fmod (ph, 0.32);
+                    if (syl >= lo && syl < hi)
+                    {
+                        e += (double) x[i] * x[i];
+                        ++k;
+                    }
+                }
+                return 10.0 * std::log10 (e / std::max<size_t> (k, 1) + 1.0e-30);
+            };
+            const double in = part (v, 0.24, 0.31) - part (v, 0.02, 0.20);
+            const double liftOff = part (yo, 0.24, 0.31) - part (yo, 0.02, 0.20) - in, liftOn = part (yn, 0.24, 0.31) - part (yn, 0.02, 0.20) - in;
+            info ("ESS HOLD off: esses re vowels (lift)" + r, liftOff, "dB");
+            info ("ESS HOLD on: esses re vowels (lift)" + r, liftOn, "dB");
+            check ("ESS HOLD removes >= 60 % of the esses' lift (margin, dB)" + r, (liftOff - liftOn) - 0.6 * std::max (liftOff, 0.0), 0.0, 60.0, "dB");
+            check ("ESS HOLD: vowel level unchanged" + r, part (yn, 0.02, 0.20) - part (yo, 0.02, 0.20), -0.75, 0.75, "dB");
+            double tp = 0.0;
+            for (float x : yn)
+                tp = std::max (tp, (double) std::abs (x));
+            check ("ESS HOLD: sample peak under the ceiling" + r, db (tp), -60.0, -1.0, "dBFS");
+            check ("ESS HOLD: latency unchanged" + r, eOn->getLatencySamples() - eOff->getLatencySamples(), 0, 0, "smp");
+        }
         // 1. silence, transparency, latency
         {
             auto e = make (fs, def);
@@ -582,17 +628,18 @@ int main (int argc, char** argv)
     }
     // CPU: 48 kHz stereo, 512 blocks, defaults (4x clipper path) and everything on
     if (! quick)
-        for (int mode = 0; mode < 2; ++mode)
+        for (int mode = 0; mode < 3; ++mode)
         {
             Params p;
             if (mode == 1) { p.clipPct = 50.0f; p.inputDb = 8.0f; p.dither = 3; p.linkPct = 50.0f; }
+            if (mode == 2) { p.inputDb = 8.0f; p.voiceHold = true; p.essHold = true; }   // 4.0: a vocal preset's detectors
             auto e = make (48000.0, p);
             Buf x = program (48000.0, 20.0, 0.3);
             const auto a = std::chrono::steady_clock::now();
             run (*e, x);
             const double s = std::chrono::duration<double> (std::chrono::steady_clock::now() - a).count();
-            check (std::string ("CPU, 48 kHz stereo, ") + (mode ? "clip 50 % + shaped dither + link 50 %" : "defaults (16x)") + ": % of one core",
-                   s / 20.0 * 100.0, 0, 6.0, "%");
+            check (std::string ("CPU, 48 kHz stereo, ") + (mode == 2 ? "VOICE HOLD + ESS HOLD on (16x)" : mode ? "clip 50 % + shaped dither + link 50 %" : "defaults (16x)")
+                       + ": % of one core", s / 20.0 * 100.0, 0, mode == 2 ? 9.0 : 6.0, "%");
         }
     std::printf ("%s: %d of %d checks passed (%.1f s)\n", fails == 0 ? "ALL PASS" : "FAILURES", checks - fails, checks,
                  std::chrono::duration<double> (std::chrono::steady_clock::now() - t0).count());

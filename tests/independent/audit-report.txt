@@ -19,9 +19,13 @@ PASS  dither dt: every sample on the 16-bit grid: max distance 0.00e+00 LSB
 PASS  dither ds: every sample on the 16-bit grid: max distance 0.00e+00 LSB
 PASS  16-bit shaped dither is quieter than TPDF in the 2-5 kHz band (where hearing is most sensitive): TPDF -140.2 dB/Hz, shaped -162.2 dB/Hz
 PASS  everything on: fixed vs random host block sizes (1..4096): max |difference| 0
-PASS  live latency changes (oversampling, lookahead): output always aligned with the host's compensation: 7 host latency updates [246, 287, 301, 359, 373, 414, 469], misaligned 16-sample windows 0, audible 80 %
-PASS  CPU, 4x: % of one core in real time: 3.39 % (limit 5.0 %)
-PASS  CPU, 16x (default) + clip 50 % + shaped dither: % of one core in real time: 4.91 % (limit 12.0 %)
+PASS  live latency changes (oversampling, lookahead): output always aligned with the host's compensation: 7 host latency updates [246, 287, 301, 359, 373, 414, 469], misaligned 16-sample windows 0, audible 77 %
+PASS  CPU, 4x: % of one core in real time: 3.49 % (limit 5.0 %)
+PASS  CPU, 16x (default) + clip 50 % + shaped dither: % of one core in real time: 4.96 % (limit 12.0 %)
 PASS  codec check on vs off: bit-identical audio (it only measures, on its own thread): max |difference| 0
+PASS  3.0.0 session compatibility: 'vocal bus +12 dB, VOICE HOLD on', ESS HOLD off renders like Axell Master 3.0.0: max |difference| 0, latency 373 / 373
+PASS  ESS HOLD on: 'vocal bus +12 dB, VOICE HOLD on': same latency, level within 0.5 dB, peaks under the ceiling: latency 373 / 373, level -0.20 dB, true peak -6.02 dBTP (ceiling -6)
+PASS  3.0.0 session compatibility: 'loud, clipper 45 %, VOICE HOLD off', ESS HOLD off renders like Axell Master 3.0.0: max |difference| 0, latency 373 / 373
+PASS  ESS HOLD on: 'loud, clipper 45 %, VOICE HOLD off': same latency, level within 0.5 dB, peaks under the ceiling: latency 373 / 373, level -0.06 dB, true peak -1.02 dBTP (ceiling -1)
 
-AUDIT: 25/25 pass (12 s)
+AUDIT: 29/29 pass (16 s)

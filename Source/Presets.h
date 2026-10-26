@@ -40,12 +40,16 @@ constexpr int kNumTargets = (int) (sizeof (kTargets) / sizeof (kTargets[0]));
 inline std::array<FactoryPreset, 28> presetList();
 
 // 3.0: VOICE HOLD is on for the VOCAL BUS presets (and the "Booth Rap Vocal Bus" of YOUR STUDIO), off for everything
-// else (on a mix or a beat the voice detector takes drum hits for a voice)
+// else (on a mix or a beat the voice detector takes drum hits for a voice). 4.0: ESS HOLD follows the same rule (the
+// sibilance network fires on hi-hats now and then)
 inline std::array<FactoryPreset, 28> factoryPresets()
 {
     auto list = presetList();
     for (auto& f : list)
+    {
         f.params.voiceHold = std::string_view (f.category) == "VOCAL BUS" || std::string_view (f.name).find ("Vocal") != std::string_view::npos;
+        f.params.essHold = f.params.voiceHold;
+    }
     return list;
 }
 
