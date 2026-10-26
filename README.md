@@ -1,5 +1,7 @@
 # Axell Master (VST3, Linux)
 
+[![CI](https://github.com/zmardanian/axell-master/actions/workflows/ci.yml/badge.svg)](https://github.com/zmardanian/axell-master/actions/workflows/ci.yml)
+
 The mastering limiter of the Axell suite: an oversampled soft clipper into a true-peak limiter, with a loudness
 meter to the broadcast standard, delivery targets with LEARN, a level-matched COMPARE, psychoacoustically shaped
 dither for the export, and (2.0) a check of the master through the real streaming codecs, with SAFE to keep a loud
