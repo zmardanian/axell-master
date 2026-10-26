@@ -267,3 +267,16 @@ applies its values and keeps GAIN).
   it off - they render bit-identically to 3.0.0 (independent audit).
 - **Reproduce:** the study scripts (stage-by-stage renders of the suite's chains, the measures, the A/B) are in Axell
   Duo Compressor's repository, `docs/research/ess_hold_study`; Master's side uses `tools/MasterRender --ess-hold 0|1`.
+
+## M20 - 4.0.1: faster pitch analysis, output byte-identical
+The artist's REAPER session dropped out at a 128-sample buffer with 20 Axell instances. Rule for the fix: no change to
+the sound at all, so every speed-up must give byte-identical output.
+- **Kept:** YIN's difference function (the sibilance/voice detector's pitch analysis, the hottest loop in the shared
+  core) computes eight lags at once in registers on a straight copy of the window. Each lag still adds its terms over
+  j in the original order, so every double is the same. Measured on four of the artist's takes, installed release vs
+  new build in pedalboard at 48 kHz / 128-sample blocks: output byte-identical; CPU vocal presets (VOICE HOLD + ESS HOLD, +12 dB in) 8.50 -> 7.59 % (-10.8 %); other presets do not run the detector and are unchanged.
+- **Rejected (bit-identical but slower or no faster):** the FFT butterfly rewritten with explicit real/imaginary
+  arithmetic (GCC already vectorises std::complex; slower), the loop interchange without register blocking (slower),
+  oversampler taps padded to a multiple of eight to drop the scalar tail (slower), AVX2 without FMA (no faster, and it
+  would drop older CPUs). FMA or -ffast-math were not considered: they change the output.
+

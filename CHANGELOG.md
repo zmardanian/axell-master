@@ -1,5 +1,8 @@
 # Changelog
 
+## 4.0.1 - 2026-10-26
+- **Faster, bit-identical.** The pitch analysis inside the suite's sibilance detector (ESS HOLD) (YIN's difference function) now computes eight lags at a time in registers on a straight copy of the window; every lag still adds its terms in the same order, so the output is byte-for-byte the same as 4.0.0 (checked on four of the artist's takes through the installed 4.0.0 and the new build). CPU at 48 kHz, 128-sample blocks: vocal presets with VOICE HOLD + ESS HOLD 8.50 -> 7.59 % of one core (-10.8 %), other presets unchanged.
+
 ## 4.0.0 - 2026-10-26
 - **ESS HOLD (new, for a vocal or vocal bus):** through each ess of the voice the limiter holds the gain of the word
   it belongs to instead of releasing, so the drive no longer pushes the S, SH and CH sounds above the vowels; after the
