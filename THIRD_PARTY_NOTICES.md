@@ -14,9 +14,24 @@ texts are reproduced here as shipped in the exact JUCE version used.
 | IJG libjpeg | as bundled in JUCE 8.0.15 (`modules/juce_graphics/image_formats/jpglib`) | IJG licence |
 | zlib | as bundled in JUCE 8.0.15 (`modules/juce_core/zip/zlib`) | zlib licence |
 | Inter typeface | https://github.com/rsms/inter (embedded in the plugin binary) | SIL Open Font License 1.1 |
+| Yuji Syuku typeface (subset) | https://github.com/Kinutafontfactory/Yuji, Copyright 2021 The Yuji Project Authors (embedded: the title) | SIL Open Font License 1.1, text below |
+| CMU ARCTIC speech databases (slt, bdl, jmk) | http://www.festvox.org/cmu_arctic/ (Carnegie Mellon University, 2003) | free for any use, notice below |
+| CSTR VCTK Corpus 0.92 (24 speakers) | https://doi.org/10.7488/ds/2645 (University of Edinburgh, Centre for Speech Technology Research, 2019) | CC BY 4.0, notice below |
 | Opus 1.5.2 (2.0: streaming codec check) | Xiph.Org, https://github.com/xiph/opus/releases/download/v1.5.2/opus-1.5.2.tar.gz | BSD 3-Clause, with royalty-free patent licences (https://opus-codec.org/license/) |
 | libvorbis 1.3.7 (2.0: streaming codec check) | Xiph.Org, https://github.com/xiph/vorbis/releases/download/v1.3.7/libvorbis-1.3.7.tar.gz | BSD 3-Clause |
 | libogg 1.3.6 (needed by libvorbis) | Xiph.Org, https://github.com/xiph/ogg/releases/download/v1.3.6/libogg-1.3.6.tar.gz | BSD 3-Clause |
+
+From 3.0 on, VOICE HOLD uses the voice decision of Axell Gate 2.0 (`external/axell-core/include/axell/dsp/VoiceActivity*.h`).
+Its network weights and the shared sibilance detector's weights were trained on features computed from the CMU ARCTIC
+recordings of the speakers slt, bdl and jmk. Modification notice (condition 2): the recordings were resampled, passed
+through random recording chains (EQ, compression, level rides, noise) and reduced to detector features; nothing else
+was changed. The voice network is also trained on 40 recordings each of 24 speakers of the CSTR VCTK Corpus 0.92
+(Junichi Yamagishi, Christophe Veaux, Kirsten MacDonald; University of Edinburgh, Centre for Speech Technology Research;
+https://doi.org/10.7488/ds/2645), licensed under the Creative Commons Attribution 4.0 International licence
+(https://creativecommons.org/licenses/by/4.0/). Changes made: the recordings (mic1) were labelled for voice activity
+from their level, combined into takes, mixed with synthetic headphone bleed, room noise, rumble, breaths and room
+reverberation, passed through random recording chains and reduced to detector features. No audio from either corpus
+is included in Axell Master; the weights are derived data.
 
 This software is based in part on the work of the Independent JPEG Group.
 
@@ -896,4 +911,144 @@ DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
 THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+```
+
+---
+
+## Yuji Syuku — `OFL.txt`
+
+```text
+Copyright 2021 The Yuji Project Authors (https://github.com/Kinutafontfactory/Yuji)
+
+This Font Software is licensed under the SIL Open Font License, Version 1.1.
+This license is copied below, and is also available with a FAQ at:
+http://scripts.sil.org/OFL
+
+
+-----------------------------------------------------------
+SIL OPEN FONT LICENSE Version 1.1 - 26 February 2007
+-----------------------------------------------------------
+
+PREAMBLE
+The goals of the Open Font License (OFL) are to stimulate worldwide
+development of collaborative font projects, to support the font creation
+efforts of academic and linguistic communities, and to provide a free and
+open framework in which fonts may be shared and improved in partnership
+with others.
+
+The OFL allows the licensed fonts to be used, studied, modified and
+redistributed freely as long as they are not sold by themselves. The
+fonts, including any derivative works, can be bundled, embedded, 
+redistributed and/or sold with any software provided that any reserved
+names are not used by derivative works. The fonts and derivatives,
+however, cannot be released under any other type of license. The
+requirement for fonts to remain under this license does not apply
+to any document created using the fonts or their derivatives.
+
+DEFINITIONS
+"Font Software" refers to the set of files released by the Copyright
+Holder(s) under this license and clearly marked as such. This may
+include source files, build scripts and documentation.
+
+"Reserved Font Name" refers to any names specified as such after the
+copyright statement(s).
+
+"Original Version" refers to the collection of Font Software components as
+distributed by the Copyright Holder(s).
+
+"Modified Version" refers to any derivative made by adding to, deleting,
+or substituting -- in part or in whole -- any of the components of the
+Original Version, by changing formats or by porting the Font Software to a
+new environment.
+
+"Author" refers to any designer, engineer, programmer, technical
+writer or other person who contributed to the Font Software.
+
+PERMISSION & CONDITIONS
+Permission is hereby granted, free of charge, to any person obtaining
+a copy of the Font Software, to use, study, copy, merge, embed, modify,
+redistribute, and sell modified and unmodified copies of the Font
+Software, subject to the following conditions:
+
+1) Neither the Font Software nor any of its individual components,
+in Original or Modified Versions, may be sold by itself.
+
+2) Original or Modified Versions of the Font Software may be bundled,
+redistributed and/or sold with any software, provided that each copy
+contains the above copyright notice and this license. These can be
+included either as stand-alone text files, human-readable headers or
+in the appropriate machine-readable metadata fields within text or
+binary files as long as those fields can be easily viewed by the user.
+
+3) No Modified Version of the Font Software may use the Reserved Font
+Name(s) unless explicit written permission is granted by the corresponding
+Copyright Holder. This restriction only applies to the primary font name as
+presented to the users.
+
+4) The name(s) of the Copyright Holder(s) or the Author(s) of the Font
+Software shall not be used to promote, endorse or advertise any
+Modified Version, except to acknowledge the contribution(s) of the
+Copyright Holder(s) and the Author(s) or with their explicit written
+permission.
+
+5) The Font Software, modified or unmodified, in part or in whole,
+must be distributed entirely under this license, and must not be
+distributed under any other license. The requirement for fonts to
+remain under this license does not apply to any document created
+using the Font Software.
+
+TERMINATION
+This license becomes null and void if any of the above conditions are
+not met.
+
+DISCLAIMER
+THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO ANY WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT
+OF COPYRIGHT, PATENT, TRADEMARK, OR OTHER RIGHT. IN NO EVENT SHALL THE
+COPYRIGHT HOLDER BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+INCLUDING ANY GENERAL, SPECIAL, INDIRECT, INCIDENTAL, OR CONSEQUENTIAL
+DAMAGES, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+FROM, OUT OF THE USE OR INABILITY TO USE THE FONT SOFTWARE OR FROM
+OTHER DEALINGS IN THE FONT SOFTWARE.
+```
+
+---
+
+## CMU ARCTIC — `COPYING` (verbatim, identical for slt, bdl and jmk)
+
+```text
+
+This voice is free for use for any purpose (commercial or otherwise)
+subject to the pretty light restrictions detailed below.
+
+############################################################################
+###                                                                       ##
+###                     Carnegie Mellon University                        ##
+###                         Copyright (c) 2003                            ##
+###                        All Rights Reserved.                           ##
+###                                                                       ##
+###  Permission to use, copy, modify,  and licence this software and its  ##
+###  documentation for any purpose, is hereby granted without fee,        ##
+###  subject to the following conditions:                                 ##
+###   1. The code must retain the above copyright notice, this list of    ##
+###      conditions and the following disclaimer.                         ##
+###   2. Any modifications must be clearly marked as such.                ##
+###   3. Original authors' names are not deleted.                         ##
+###                                                                       ##
+###  THE AUTHORS OF THIS WORK DISCLAIM ALL WARRANTIES WITH REGARD TO      ##
+###  THIS SOFTWARE, INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY   ##
+###  AND FITNESS, IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY         ##
+###  SPECIAL, INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES            ##
+###  WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN   ##
+###  AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION,          ##
+###  ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF       ##
+###  THIS SOFTWARE.                                                       ##
+###                                                                       ##
+############################################################################
+###                                                                       ##
+###  See http://www.festvox.org/cmu_arctic/ for more details              ##
+###                                                                       ##
+############################################################################
+
 ```

@@ -148,6 +148,67 @@ static double thdnDb (const float* y, int n, double f0, double fs)
     return db (std::sqrt (res / n) / (std::hypot (a, b) / std::sqrt (2.0)));
 }
 
+// synthetic voice (Axell Gate's test voice): vowels through formants and sibilants, 1.6 s phrases, 0.8 s pauses
+static std::vector<float> voiceTake (double fs, double secs, double gainDb, double noiseDb)
+{
+    const size_t n = (size_t) (secs * fs);
+    std::vector<float> x (n);
+    std::mt19937 g (5);
+    std::normal_distribution<double> nd;
+    const double gain = std::pow (10.0, gainDb / 20.0), ng = std::pow (10.0, noiseDb / 20.0), pi = 3.14159265358979323846;
+    double ph = 0.0, b0 = 0, b1 = 0, s1 = 0, s2 = 0;
+    const double w = 2 * pi * 7000 / fs, rr = std::exp (-pi * 1500 / fs);
+    for (size_t i = 0; i < n; ++i)
+    {
+        const double t = (double) i / fs, phrase = std::fmod (t, 2.4), syl = std::fmod (phrase, 0.32);
+        double y = 0.0;
+        if (phrase > 0.2 && phrase < 1.8)
+        {
+            const double f0 = 140.0 + 25.0 * std::sin (2 * pi * 0.6 * t);
+            ph += 2 * pi * f0 / fs;
+            if (syl < 0.22)
+            {
+                const double env = std::min (1.0, std::min (syl, 0.22 - syl) / 0.015);
+                double s = 0;
+                for (int h = 1; h * f0 < std::min (0.45 * fs, 8000.0); ++h)
+                {
+                    const double f = h * f0;
+                    s += (std::exp (-std::pow ((f - 650) / 250, 2)) + 0.6 * std::exp (-std::pow ((f - 1150) / 300, 2))
+                          + 0.2 * std::exp (-std::pow ((f - 2600) / 500, 2))) * std::sin (h * ph) / std::sqrt ((double) h);
+                }
+                y = 0.35 * env * s;
+            }
+            else
+            {
+                const double a = (1 - rr) * nd (g) + 2 * rr * std::cos (w) * s1 - rr * rr * s2;
+                s2 = s1;
+                s1 = a;
+                y = 0.8 * a * std::sin (pi * (syl - 0.22) / 0.1);
+            }
+        }
+        const double wn = nd (g);
+        b0 = 0.997 * b0 + 0.03 * wn;
+        b1 = 0.6 * b1 + 0.4 * wn;
+        x[i] = (float) (gain * y + ng * (b0 + 0.3 * b1));
+    }
+    return x;
+}
+static double cycleRmsDb (const std::vector<float>& x, double fs, double lo, double hi)
+{
+    double e = 0.0;
+    size_t k = 0;
+    for (size_t i = (size_t) (2.4 * fs); i < x.size(); ++i)
+    {
+        const double ph = std::fmod ((double) i / fs, 2.4);
+        if (ph >= lo && ph < hi)
+        {
+            e += (double) x[i] * x[i];
+            ++k;
+        }
+    }
+    return 10.0 * std::log10 (e / std::max<size_t> (k, 1) + 1.0e-30);
+}
+
 int main (int argc, char** argv)
 {
     const bool quick = argc > 1 && std::string (argv[1]) == "--quick";
@@ -156,6 +217,32 @@ int main (int argc, char** argv)
     {
         const std::string r = " @" + std::to_string ((int) fs);
         Params def;
+        // 0. 3.0 VOICE HOLD (a vocal bus driven ~10 dB into the limiter): pauses no longer lifted, the voice the same
+        {
+            const auto v = voiceTake (fs, 12.0, -10.0, -56.0);
+            Params p;
+            p.inputDb = 24.0f;
+            p.osLog2 = 2;
+            auto eOff = make (fs, p);
+            const auto off = run (*eOff, Buf { v, v });
+            p.voiceHold = true;
+            auto eOn = make (fs, p);
+            const auto on = run (*eOn, Buf { v, v });
+            const int L = eOn->getLatencySamples();
+            auto al = [L] (std::vector<float> y) { y.erase (y.begin(), y.begin() + L); return y; };
+            const auto yo = al (off[0]), yn = al (on[0]);
+            const double liftOff = (cycleRmsDb (yo, fs, 1.9, 2.35) - cycleRmsDb (yo, fs, 0.3, 1.7)) - (cycleRmsDb (v, fs, 1.9, 2.35) - cycleRmsDb (v, fs, 0.3, 1.7));
+            const double liftOn = (cycleRmsDb (yn, fs, 1.9, 2.35) - cycleRmsDb (yn, fs, 0.3, 1.7)) - (cycleRmsDb (v, fs, 1.9, 2.35) - cycleRmsDb (v, fs, 0.3, 1.7));
+            info ("VOICE HOLD off: pauses re voice (lift)" + r, liftOff, "dB");
+            info ("VOICE HOLD on: pauses re voice (lift)" + r, liftOn, "dB");
+            check ("VOICE HOLD lowers the pauses' lift by" + r, liftOff - liftOn, 6.0, 60.0, "dB");
+            check ("VOICE HOLD: voice level unchanged" + r, cycleRmsDb (yn, fs, 0.3, 1.7) - cycleRmsDb (yo, fs, 0.3, 1.7), -0.75, 0.75, "dB");
+            double tp = 0.0;
+            for (float x : yn)
+                tp = std::max (tp, (double) std::abs (x));
+            check ("VOICE HOLD: sample peak under the ceiling" + r, db (tp), -60.0, -1.0, "dBFS");
+            check ("VOICE HOLD: latency unchanged" + r, eOn->getLatencySamples() - eOff->getLatencySamples(), 0, 0, "smp");
+        }
         // 1. silence, transparency, latency
         {
             auto e = make (fs, def);

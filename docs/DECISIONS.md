@@ -204,3 +204,32 @@ MASTER, YOUR STUDIO (BOOM BAP), VOCAL BUS, BEAT / DRUM BUS. 1.0's eight keep pro
 *Verified also:* DSP suite (every preset: finite, sample peak below its ceiling, at three rates); plugin suite (28
 presets, 1.0's eight first in order, every preset has a group, a description and a unique name; every program
 applies its values and keeps GAIN).
+
+## M18 - 3.0: VOICE HOLD for a vocal bus (from Axell Duo Compressor 3.0 and Axell Gate)
+- **The problem.** On a vocal (bus) the drive lifts everything and the limiter pulls the words back down, so the room,
+  breaths and bleed between phrases come up by the amount of limiting. On the artist's real take (gated), the vocal
+  presets driven +12 / +18 dB lifted the pauses re the voice by +3.2 .. +13.9 dB.
+- **The cluster's answer.** Axell Duo Compressor 3.0 solved it for compression with the suite's voice decision (Axell
+  Gate 2.0's detector in axell-core, causal, 10 ms): in a pause the release stops and the gain glides (12.5 ms) to the
+  voice's recent average (0.25 s). The same is now in the core's MasterLimiter (optional per-sample pause flags; the
+  attack and the ceiling guarantee are untouched; without flags bit-identical - CoreTests). A pause counts only within
+  10 s of a voice.
+- **Measured** (the artist's take, `tools/MasterRender --voice-hold`, pauses re voice, off -> on; the voice's own
+  reduction and level spread unchanged within 0.2 dB):
+
+  | preset | +12 dB | +18 dB |
+  |---|---|---|
+  | Vocal Peak Catcher | +8.1 -> +2.7 dB | +13.9 -> +4.6 dB |
+  | Sung Vocal (Smooth) | +3.2 -> 0.0 dB | +6.8 -> +0.7 dB |
+  | Booth Rap Vocal Bus | +3.4 -> +1.7 dB | +6.1 -> +2.5 dB |
+  | Vocal Upfront (Dense) | +3.7 -> +2.4 dB | +6.2 -> +3.1 dB |
+  | Ad-libs / Background Vocals | +4.1 -> +2.7 dB | +7.0 -> +4.9 dB |
+
+  What remains in the clipping presets is the clipper's own peak reduction (a static curve has no release to hold).
+- **Off by default**, on for the vocal presets: the voice network takes drum hits for a voice (Duo D31), so on a mix
+  or a beat it would hold the limiter in the wrong places.
+- **Tried and not shipped: ESS GUARD** (`research/ess_guard_study.py`). Velvet's sibilance network eased the clipper on
+  esses so the limiter would take those peaks. On the artist's mix at equal loudness: Boom Bap Loud -2.8 dB of
+  "crunch" on the esses but +0.5 dB elsewhere (more drive needed); Loud Rap / Trap slightly worse on the esses; no
+  effect where the clipper is light. No net gain.
+

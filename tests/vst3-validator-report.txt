@@ -15,7 +15,7 @@
 	name = Axell Master
 	category = Audio Module Class
 	subCategories = Fx|Dynamics|Mastering
-	version = 2.0.0
+	version = 3.0.0
 	sdkVersion = VST 3.8.0
 	cid = ABCDEF019182FAEB417879624D737431
 
@@ -23,7 +23,7 @@
 	name = Axell Master
 	category = Component Controller Class
 	subCategories = Fx|Dynamics|Mastering
-	version = 2.0.0
+	version = 3.0.0
 	sdkVersion = VST 3.8.0
 	cid = ABCDEF011234ABCD417879624D737431
 
@@ -59,7 +59,7 @@ Info:  => Event Buses: [0 In(s) => 0 Out(s)]
 
 [Scan Parameters]
 Info:  ===Scan Parameters ====================================
-Info:  This component exports 15 parameter(s)
+Info:  This component exports 16 parameter(s)
 Info:     Parameter 000 (id=100358090): [title="Input"] [unit=""] [type = Float, default = 0.400000, unit = 0]
 Info:     Parameter 001 (id=3056464): [title="Clip"] [unit=""] [type = Float, default = 0.000000, unit = 0]
 Info:     Parameter 002 (id=533024305): [title="Clip Shape"] [unit=""] [type = Float, default = 0.300000, unit = 0]
@@ -73,9 +73,10 @@ Info:     Parameter 009 (id=815960102): [title="Dither"] [unit=""] [type = Discr
 Info:     Parameter 010 (id=1266577809): [title="Loudness Target"] [unit=""] [type = Discrete, default = 0.200000, unit = 0]
 Info:     Parameter 011 (id=950484197): [title="Level-Matched Compare"] [unit=""] [type = Toggle, default = 0.000000, unit = 0]
 Info:     Parameter 012 (id=1638826642): [title="Codec Check"] [unit=""] [type = Toggle, default = 1.000000, unit = 0]
-Info:     Parameter 013 (id=1652125811): [title="Bypass"] [unit=""] [type = Toggle, default = 0.000000, unit = 0]
-Info:     Parameter 014 (id=1886548852): [title="Program"] [unit=""] [type = Discrete, default = 0.000000, unit = 0]
-Info:  =>Parameter 014 (id=1886548852) is kIsProgramChange, but not a kIsList!
+Info:     Parameter 013 (id=1128096017): [title="Voice Hold"] [unit=""] [type = Toggle, default = 0.000000, unit = 0]
+Info:     Parameter 014 (id=1652125811): [title="Bypass"] [unit=""] [type = Toggle, default = 0.000000, unit = 0]
+Info:     Parameter 015 (id=1886548852): [title="Program"] [unit=""] [type = Discrete, default = 0.000000, unit = 0]
+Info:  =>Parameter 015 (id=1886548852) is kIsProgramChange, but not a kIsList!
 [Succeeded]
 
 [MIDI Mapping]

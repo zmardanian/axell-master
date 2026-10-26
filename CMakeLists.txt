@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.22)
-project(AxellMaster VERSION 2.0.0)
+project(AxellMaster VERSION 3.0.0)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -79,7 +79,7 @@ juce_add_plugin(AxellMaster
 
 set(MASTER_SOURCES Source/PluginProcessor.cpp Source/PluginEditor.cpp)
 # JUCE_USE_OGGVORBIS=0: JUCE carries its own libvorbis copy; the codec check links the reference one (one definition)
-set(MASTER_DEFS JUCE_WEB_BROWSER=0 JUCE_USE_CURL=0 JUCE_VST3_CAN_REPLACE_VST2=0 JUCE_DISPLAY_SPLASH_SCREEN=0 JUCE_USE_OGGVORBIS=0)
+set(MASTER_DEFS JUCE_WEB_BROWSER=0 AXELL_THEME_HUE=150 JUCE_USE_CURL=0 JUCE_VST3_CAN_REPLACE_VST2=0 JUCE_DISPLAY_SPLASH_SCREEN=0 JUCE_USE_OGGVORBIS=0)
 target_sources(AxellMaster PRIVATE ${MASTER_SOURCES})
 target_compile_definitions(AxellMaster PUBLIC ${MASTER_DEFS})
 axell_core_add_gui(AxellMaster)

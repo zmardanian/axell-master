@@ -59,7 +59,7 @@ int main (int argc, char** argv)
 {
     if (argc < 6)
     {
-        std::fprintf (stderr, "usage: MasterRender in.f32 out.f32 rate preset gainDb [--safe] [--ceiling dBTP] [--target dBTP] [--no-codecs] [--clip %]\n");
+        std::fprintf (stderr, "usage: MasterRender in.f32 out.f32 rate preset gainDb [--safe] [--ceiling dBTP] [--target dBTP] [--no-codecs] [--clip %] [--voice-hold 0|1]\n");
         return 2;
     }
     std::ifstream f (argv[1], std::ios::binary | std::ios::ate);
@@ -81,6 +81,8 @@ int main (int argc, char** argv)
             codecs = false;
         else if (std::strcmp (argv[a], "--clip") == 0 && a + 1 < argc)
             p.clipPct = (float) std::atof (argv[++a]);
+        else if (std::strcmp (argv[a], "--voice-hold") == 0 && a + 1 < argc)
+            p.voiceHold = std::atoi (argv[++a]) != 0;
         else if (std::strcmp (argv[a], "--target") == 0 && a + 1 < argc)
             target = (float) std::atof (argv[++a]);
         else if (std::strcmp (argv[a], "--ceiling") == 0 && a + 1 < argc)

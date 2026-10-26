@@ -41,6 +41,9 @@ The history shows the last seconds: peaks in and out, short-term loudness agains
 limiter gain reduction.
 
 **OUTPUT**:
+- **VOICE HOLD** (3.0, for a vocal or vocal bus): in the voice's pauses the limiter holds its gain instead of
+  releasing, so the drive does not lift the room and the breaths (Vocal Peak Catcher +12 dB on a real take: pauses
+  +8.1 -> +2.7 dB re the voice). On in the vocal presets; leave it off on a mix or a beat.
 - **COMPARE** plays the unprocessed mix at the master's loudness, so you hear what the processing does and not just
   "louder". In the audit it matched within 0.03 LU.
 - **DITHER** for the final export: 24-bit or 16-bit TPDF, or 16-bit shaped. The shaped mode uses the 9th-order

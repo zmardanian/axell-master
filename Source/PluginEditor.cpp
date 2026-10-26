@@ -1,5 +1,7 @@
 #include "PluginEditor.h"
 
+#include <axell/gui/BrandTitle.h>
+
 #include <cmath>
 
 using namespace ui;
@@ -28,6 +30,10 @@ const char* shape = "Clipper knee: SOFT rounds the peaks (warmer, gentler), HARD
 const char* os = "Oversampling for the clipper. 16x (default): even hard clipping of bright mixes stays clean (aliasing below -99 dB). Lower settings save a little CPU; 1x skips oversampling (the ceiling still holds).";
 const char* dither = "Only for the final export at that bit depth: 24-bit or 16-bit TPDF dither, or 16-bit shaped: the noise moved "
                      "out of the 1-6 kHz range where hearing is most sensitive (about 20 dB quieter there). Off while mixing.";
+const char* voiceHold = "VOICE HOLD (for a vocal or vocal bus): in the pauses of the voice the limiter holds its gain at the "
+                        "voice's level instead of releasing, so the drive no longer lifts the room, the breaths and the "
+                        "headphone bleed between phrases. Uses Axell Gate's voice detector; no added latency. Leave it off "
+                        "on a mix or a beat (the detector is trained on voices).";
 const char* compare = "COMPARE plays the unprocessed mix at the same loudness as the master (measured like a loudness meter). "
                       "Louder always sounds better - this shows what the processing really does.";
 const char* history = "The last seconds: peaks going in after GAIN (grey) and coming out (white), short-term loudness "
@@ -497,11 +503,12 @@ MasterEditor::MasterEditor (MasterProcessor& p) : AudioProcessorEditor (&p), pro
     os.bind (*proc.apvts.getParameter ("os"), tip::os);
     dither.bind (proc.apvts, "dither", tip::dither);
     compare.bind (proc.apvts, "compare", tip::compare);
+    voiceHold.bind (proc.apvts, "voiceHold", tip::voiceHold);
     history.setTooltip (tip::history);
     meters.setTooltip (tip::gr);
     curve.setTooltip (tip::curve);
     for (auto* c : std::initializer_list<juce::Component*> { &presetPrev, &presetNext, &presetName, &presetSave, &slotA, &slotB, &slotCopy,
-                                                            &compare, &history, &loudness, &gain, &ceiling, &release, &look, &link,
+                                                            &compare, &voiceHold, &history, &loudness, &gain, &ceiling, &release, &look, &link,
                                                             &style, &clip, &shape, &os, &dither, &meters, &curve, &codecView })
         content.addAndMakeVisible (c);
     for (auto* b : { &slotA, &slotB })
@@ -608,6 +615,8 @@ void MasterEditor::layout()
         a.removeFromBottom (22);
         compare.setBounds (a.removeFromBottom (34));
         compareLabel = a.removeFromBottom (20);
+        a.removeFromBottom (6);
+        voiceHold.setBounds (a.removeFromBottom (30));
         a.removeFromTop (12);
         a.removeFromBottom (8);
         codecView.setBounds (a);
@@ -621,14 +630,13 @@ void MasterEditor::Content::paint (juce::Graphics& g)
     g.fillAll (col::bg);
     g.setColour (col::header);
     g.fillRect (e.headerArea);
-    g.setColour (col::grid);
-    g.drawHorizontalLine (e.headerArea.getBottom() - 1, 0.0f, (float) mui::kWidth);
-    g.setColour (col::text);
-    g.setFont (ui::caps (21.0f, 2));
-    g.drawText ("AXELL MASTER", 18, 8, 300, 26, Justification::centredLeft);
+    axell::brand::drawHeaderRule (g, (float) e.headerArea.getBottom() - 1.0f, 0.0f, (float) mui::kWidth, col::grid);
+    // Axell's Dojo: the family emblem, its wave and dot in this plugin's colour
+    axell::brand::drawEmblem (g, { 12.0f, 6.0f, 46.0f, 46.0f }, juce::Colour (0xff58c27d));
+    axell::brand::drawTitle (g, 68.0f, 28.0f, "Master", juce::String (juce::CharPointer_UTF8 ("\xe5\x8c\xa0"))); // 匠
     g.setFont (ui::caps (10.0f, 1));
     g.setColour (col::dim);
-    g.drawText ("CLIPPER  +  TRUE-PEAK LIMITER  +  LOUDNESS", 19, 33, 300, 14, Justification::centredLeft);
+    g.drawText ("CLIPPER  +  TRUE-PEAK LIMITER  +  LOUDNESS", 67, 37, 300, 14, Justification::centredLeft);
     auto panel = [&g] (Rectangle<int> a, Colour accent, const String& title)
     {
         const auto r = a.toFloat();

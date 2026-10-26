@@ -19,9 +19,9 @@ PASS  dither dt: every sample on the 16-bit grid: max distance 0.00e+00 LSB
 PASS  dither ds: every sample on the 16-bit grid: max distance 0.00e+00 LSB
 PASS  16-bit shaped dither is quieter than TPDF in the 2-5 kHz band (where hearing is most sensitive): TPDF -140.2 dB/Hz, shaped -162.2 dB/Hz
 PASS  everything on: fixed vs random host block sizes (1..4096): max |difference| 0
-PASS  live latency changes (oversampling, lookahead): output always aligned with the host's compensation: 7 host latency updates [246, 287, 301, 359, 373, 414, 469], misaligned 16-sample windows 0, audible 79 %
-PASS  CPU, 4x: % of one core in real time: 3.38 % (limit 5.0 %)
-PASS  CPU, 16x (default) + clip 50 % + shaped dither: % of one core in real time: 4.87 % (limit 12.0 %)
+PASS  live latency changes (oversampling, lookahead): output always aligned with the host's compensation: 7 host latency updates [246, 287, 301, 359, 373, 414, 469], misaligned 16-sample windows 0, audible 80 %
+PASS  CPU, 4x: % of one core in real time: 3.39 % (limit 5.0 %)
+PASS  CPU, 16x (default) + clip 50 % + shaped dither: % of one core in real time: 4.91 % (limit 12.0 %)
 PASS  codec check on vs off: bit-identical audio (it only measures, on its own thread): max |difference| 0
 
-AUDIT: 25/25 pass (11 s)
+AUDIT: 25/25 pass (12 s)

@@ -1,4 +1,5 @@
 #pragma once
+#include <string_view>
 // Axell Master - factory presets (framework independent: the test suite checks them). Input gain stays 0 dB in every
 // preset (it depends on the mix): set it by ear or with LEARN. Names describe the use; no third-party branding.
 #include "Engine.h"
@@ -36,7 +37,19 @@ constexpr int kNumTargets = (int) (sizeof (kTargets) / sizeof (kTargets[0]));
 // 1.0's eight keep their program numbers 0-7 (projects and host automation refer to them); 2.0 adds 20 after them.
 // Every value of the 2.0 presets was checked on real material (research/presets_study.py, DECISIONS M17).
 // Targets: 0 off, 1 -14, 2 -16, 3 -9, 4 -23, 5 -24. Styles: 0 transparent, 1 punchy, 2 loud, 3 safe.
+inline std::array<FactoryPreset, 28> presetList();
+
+// 3.0: VOICE HOLD is on for the VOCAL BUS presets (and the "Booth Rap Vocal Bus" of YOUR STUDIO), off for everything
+// else (on a mix or a beat the voice detector takes drum hits for a voice)
 inline std::array<FactoryPreset, 28> factoryPresets()
+{
+    auto list = presetList();
+    for (auto& f : list)
+        f.params.voiceHold = std::string_view (f.category) == "VOCAL BUS" || std::string_view (f.name).find ("Vocal") != std::string_view::npos;
+    return list;
+}
+
+inline std::array<FactoryPreset, 28> presetList()
 {
     auto P = [] (float clip, float shape, float ceil, float rel, int style, float look, float link)
     {

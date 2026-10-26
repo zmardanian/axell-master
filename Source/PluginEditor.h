@@ -120,6 +120,7 @@ private:
     ui::MenuButton presetName;
     juce::TextButton slotA { "A" }, slotB { "B" }, slotCopy { "COPY" };
     ui::Toggle compare { "COMPARE", ui::col::warn, "pill" };
+    ui::Toggle voiceHold { "VOICE HOLD", ui::col::teal, "pill" };
 
     HistoryView history;
     LoudnessPanel loudness { proc };

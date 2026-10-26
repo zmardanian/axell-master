@@ -12,12 +12,12 @@ for d in "$DIR/../axell-penta-eq/build/_deps/juce-src" "$DIR/../axell-duo-compre
 done
 if [ "${1:-}" = "--asan" ]; then
   distrobox enter juce-build -- bash -lc "cd '$DIR' && cmake -B build-asan -G Ninja -DCMAKE_BUILD_TYPE=RelWithDebInfo -DMASTER_SANITIZE=ON $JUCE_SRC >/dev/null \
-    && cmake --build build-asan --target MasterDspTests MasterPluginTests -j\$(nproc) \
+    && cmake --build build-asan --target MasterDspTests MasterPluginTests -j${JOBS:-6} \
     && export ASAN_OPTIONS=detect_leaks=1:abort_on_error=1 LSAN_OPTIONS=suppressions='$DIR'/tests/lsan.supp UBSAN_OPTIONS=print_stacktrace=1:halt_on_error=1 \
     && { ./build-asan/MasterDspTests --quick && ./build-asan/MasterPluginTests_artefacts/RelWithDebInfo/MasterPluginTests; } 2>&1 | tee tests/report-asan.txt"
   exit $?
 fi
 ARGS="${1:-}"
 distrobox enter juce-build -- bash -lc "cd '$DIR' && { [ -f build/CMakeCache.txt ] || cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Release $JUCE_SRC; } \
-  && cmake --build build --target MasterDspTests MasterPluginTests -j\$(nproc) \
+  && cmake --build build --target MasterDspTests MasterPluginTests -j${JOBS:-6} \
   && { ./build/MasterDspTests $ARGS && ./build/MasterPluginTests_artefacts/Release/MasterPluginTests; } 2>&1 | tee tests/report.txt"

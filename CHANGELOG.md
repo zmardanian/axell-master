@@ -1,5 +1,17 @@
 # Changelog
 
+## 3.0.0 - 2026-10-26
+- **VOICE HOLD (new, for a vocal or vocal bus):** in the pauses of the voice the limiter holds its gain at the voice's
+  level instead of releasing, so the drive no longer lifts the room, breaths and headphone bleed between phrases.
+  On the artist's take with Vocal Peak Catcher driven +12 dB: pauses +8.1 dB re the voice without it, +2.7 dB with
+  it; the voice limited exactly as before. Uses the suite's voice detector (Axell Gate's, via axell-core); no added
+  latency. On in the vocal presets, off by default (DECISIONS M18).
+- **Axell's Dojo look**: the family emblem, a brush-written title with Master's seal (匠, "master craftsman") and
+  Master's own forest-green ground.
+- Tried and not shipped: ESS GUARD (no net gain on the artist's mix, M18).
+- Verified: DSP 378 checks, plugin 61, ASan + UBSan clean, independent audit 25/25, pluginval strictness 10,
+  Steinberg's VST3 validator 47/47; axell-core CoreTests 133/133 (the limiter's hold included).
+
 ## 2.0.0 - 2026-10-17
 Masters that survive streaming.
 

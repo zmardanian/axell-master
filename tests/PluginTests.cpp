@@ -2,6 +2,7 @@
 // Exit code = number of failures. Registered with CTest as "plugin_suite".
 #include "../Source/PluginEditor.h"
 #include "../Source/PluginProcessor.h"
+#include "../Source/Presets.h"
 
 #include <cstdio>
 #include <random>
@@ -84,19 +85,26 @@ int main()
     //== 1. frozen parameter IDs and order (automation uses the index), version hints
     {
         MasterProcessor p;
-        // 1.0's twelve keep their index and version hint 1; 2.0 appends codecCheck (version hint 2)
+        // 1.0's twelve keep their index and version hint 1; 2.0 appends codecCheck (version hint 2), 3.0 voiceHold (3)
         const juce::StringArray frozen { "input", "clip", "clipShape", "ceiling", "release", "style", "lookahead", "link",
-                                         "os", "dither", "target", "compare", "codecCheck" };
+                                         "os", "dither", "target", "compare", "codecCheck", "voiceHold" };
         auto& params = p.getParameters();
         check (params.size() == frozen.size(), "parameter count = " + juce::String (frozen.size()));
         for (int i = 0; i < params.size() && i < frozen.size(); ++i)
         {
             auto* wp = dynamic_cast<juce::AudioProcessorParameterWithID*> (params[i]);
-            const int hint = i < 12 ? 1 : 2;
+            const int hint = i < 12 ? 1 : i < 13 ? 2 : 3;
             check (wp != nullptr && wp->getParameterID() == frozen[i] && wp->getVersionHint() == hint,
                    "parameter index " + juce::String (i) + " is '" + frozen[i] + "' (version hint " + juce::String (hint) + ")");
         }
         check (getParam (p, "codecCheck") == 1.0f, "default: codec check on");
+        check (getParam (p, "voiceHold") == 0.0f, "default: VOICE HOLD off (a mix master; the vocal presets turn it on)");
+        {
+            bool ok = true;
+            for (const auto& f : axm::factoryPresets())
+                ok = ok && f.params.voiceHold == (juce::String (f.category) == "VOCAL BUS" || juce::String (f.name).contains ("Vocal"));
+            check (ok, "factory presets: VOICE HOLD on exactly for the vocal presets");
+        }
         check (getParam (p, "ceiling") == -1.0f && getParam (p, "os") == 4.0f && getParam (p, "target") == 1.0f
                    && getParam (p, "clip") == 0.0f && getParam (p, "input") == 0.0f,
                "defaults: ceiling -1 dBTP, 16x, target -14 LUFS, clipper off, input 0 dB");
