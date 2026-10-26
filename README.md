@@ -5,7 +5,26 @@ meter to the broadcast standard, delivery targets with LEARN, a level-matched CO
 dither for the export, and (2.0) a check of the master through the real streaming codecs, with SAFE to keep a loud
 master from clipping after YouTube or Spotify encode it. Built for rap, trap and boom-bap masters, and transparent enough for acoustic music.
 
+> **Part of Axell's Dojo** - the Axell Signature suite for rap vocals, beats and masters on Linux:
+> [Penta EQ](https://github.com/zmardanian/axell-penta-eq) · [Duo Compressor](https://github.com/zmardanian/axell-duo-compressor) ·
+> [Gate](https://github.com/zmardanian/axell-gate) · [De-Reverb](https://github.com/zmardanian/axell-dereverb) ·
+> [Velvet](https://github.com/zmardanian/axell-velvet) · [Master](https://github.com/zmardanian/axell-master), installed,
+> updated and tuned to your voice by the [Axell Signature Dojo](https://github.com/zmardanian/axell-signature-dojo).
+> Since 3.0 the plugins share one core library (`external/axell-core`): a breakthrough in one plugin becomes a
+> feature of the next.
+
 ![Axell Master](docs/screenshots/master-100pct.png)
+
+## What's new in 3.0
+
+- **VOICE HOLD (for a vocal or vocal bus)**: driving a vocal into the limiter lifts the room, breaths and headphone
+  bleed between phrases by as much as the words are limited. With VOICE HOLD the suite's voice detector (Axell Gate's)
+  marks the pauses and the limiter holds its gain at the voice's level there instead of releasing - Axell Duo
+  Compressor 3.0's method, built into the shared core limiter (attack and ceiling untouched). On a real take,
+  Vocal Peak Catcher driven +12 dB: pauses **+8.1 -> +2.7 dB** re the voice, the voice limited exactly as before. On in
+  the vocal presets, off by default (on a mix or a beat the detector would take drum hits for a voice).
+- **Axell's Dojo look**: the family emblem, a brush-written title with Master's seal (匠, "master craftsman"), a
+  forest-green ground.
 
 ## What it does
 
@@ -93,10 +112,12 @@ name. User presets and A/B too. Presets never change GAIN: how hard to drive dep
 | Host block sizes 1-4096, everything on | identical output |
 | CPU (48 kHz stereo, one core) | 4.7 % at defaults (16x), 3.4 % at 4x; the codec check adds ~15 % of one core on its own thread (switchable) |
 | Real-time safety | no allocation, lock or I/O in the audio path (allocation counter in the test suite) |
+| VOICE HOLD, a real take (vocal presets driven +18 dB) | pauses re the voice: Peak Catcher +13.9 -> +4.6 dB, Sung Vocal +6.8 -> +0.7, Booth Rap +6.1 -> +2.5; the voice's limiting within 0.2 dB |
+| VOICE HOLD, synthetic voice (all rates) | pause lift 6.7 -> 0.1 dB, voice level unchanged, the ceiling held |
 
 All of these come from:
-- the automated suites: `tests/`, 366 DSP checks at 44.1 / 48 / 96 kHz (the codec check also at 88.2 kHz) plus 58
-  plugin checks; the core adds 80 checks;
+- the automated suites: `tests/`, 378 DSP checks at 44.1 / 48 / 96 kHz (the codec check also at 88.2 kHz) plus 61
+  plugin checks; the core adds 133 checks (the limiter's VOICE HOLD included);
 - an independent black-box audit through a VST3 host (`tests/independent/master_audit.py`, 25 checks, analysis from
   textbook definitions);
 - the studies in `research/`: real masters through the streaming codecs, SAFE's calibration, every preset on real
@@ -107,14 +128,28 @@ All of these come from:
 
 The reports are in `tests/`; the reasoning behind every design choice is in [docs/DECISIONS.md](docs/DECISIONS.md).
 
+## Engineering progress
+
+| Version | Date | Engineering | Measured |
+|---|---|---|---|
+| **1.0.0** | 2026-10-15 | Oversampled soft clipper (16x default) into a true-peak limiter with four program-dependent release styles and a bass-aware hold; BS.1770-4 / EBU R128 meter; targets with LEARN; level-matched COMPARE; 9th-order F-weighted dither | Ceiling within 0.02 dB of -1 dBTP on mixes driven +12-14 dB (independent reconstruction); clipper aliasing -106 dBc at 16x; 40-50 Hz bass at 6 dB of limiting -139 dB THD+N; EBU Tech 3341/3342 conformance |
+| **2.0.0** | 2026-10-17 | STREAMING CODECS: the master through real Opus and Vorbis encoders while it plays (4 frame offsets, own thread); SAFE lowers the ceiling until both decode at -0.3 dBTP; 20 presets checked on real material | 1.0's -1 dBTP masters decoded at up to +1.1 dBTP (Vorbis); after SAFE: 0 clipped samples on 9 loud masters with Opus, Vorbis 160/320, FDK AAC 256, MP3 320 |
+| **3.0.0** | 2026-10-26 | VOICE HOLD for a vocal bus (Gate's voice detector + Duo 3.0's method in the shared core limiter); ESS GUARD studied and rejected (no net gain on the artist's mix, DECISIONS M18); Axell's Dojo look | Real take: pauses +8.1 -> +2.7 dB (+12 dB drive), voice unchanged; 378 DSP + 61 plugin checks, ASan clean, audit 25/25, pluginval L10, validator 47/47 |
+
+Every design decision with its measurement: [docs/DECISIONS.md](docs/DECISIONS.md); all changes: [CHANGELOG.md](CHANGELOG.md).
+
 ## Install (Linux)
 
-    tar xzf AxellMaster-2.0.0-linux-x86_64.tar.gz
-    cd AxellMaster-2.0.0-linux-x86_64
+Download `AxellMaster-3.0.0-linux-x86_64.tar.gz` from the
+[latest release](https://github.com/zmardanian/axell-master/releases/latest) (optional: `sha256sum -c SHA256SUMS.txt`), then:
+
+    tar xzf AxellMaster-3.0.0-linux-x86_64.tar.gz
+    cd AxellMaster-3.0.0-linux-x86_64
     ./install.sh
 
 The installer copies `Axell Master.vst3` to `~/.vst3`. Then in REAPER: Options > Preferences > Plug-ins > VST >
-Re-scan. Put it last on the master bus.
+Re-scan. Put it last on the master bus. Or let the [Axell Signature Dojo](https://github.com/zmardanian/axell-signature-dojo)
+install and update it.
 
 ## Build (Bazzite / any Linux, inside a distrobox)
 
