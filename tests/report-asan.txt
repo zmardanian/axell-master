@@ -157,7 +157,7 @@ PASS  codec check: audio it could not keep up with is flagged incomplete        
 PASS  codec check (worker thread): measured the whole 5 s                                                       4.9493 s  [4.9 .. 5.01]
 PASS  codec check (worker thread): -3 dBFS sine decodes at -3 dBTP                                             -2.4117 dBTP  [-3.6 .. -2.2]
 PASS  codec check (worker thread): nothing dropped                                                              0.0000   [0 .. 0]
-ALL PASS: 154 of 154 checks passed (419.4 s)
+ALL PASS: 154 of 154 checks passed (401.9 s)
 PASS  parameter count = 15
 PASS  parameter index 0 is 'input' (version hint 1)
 PASS  parameter index 1 is 'clip' (version hint 1)

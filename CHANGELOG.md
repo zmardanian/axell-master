@@ -1,5 +1,8 @@
 # Changelog
 
+## 4.0.2 - 2026-10-27
+- **Version on the interface**: the plugin's version, small and quiet after the title - so you can always see which build is loaded. The audio is byte-for-byte the same as 4.0.1 (checked through the released 4.0.1 and the new build).
+
 ## 4.0.1 - 2026-10-26
 - **Faster, bit-identical.** The pitch analysis inside the suite's sibilance detector (ESS HOLD) (YIN's difference function) now computes eight lags at a time in registers on a straight copy of the window; every lag still adds its terms in the same order, so the output is byte-for-byte the same as 4.0.0 (checked on four of the artist's takes through the installed 4.0.0 and the new build). CPU at 48 kHz, 128-sample blocks: vocal presets with VOICE HOLD + ESS HOLD 8.50 -> 7.59 % of one core (-10.8 %), other presets unchanged.
 

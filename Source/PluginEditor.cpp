@@ -639,7 +639,9 @@ void MasterEditor::Content::paint (juce::Graphics& g)
     axell::brand::drawHeaderRule (g, (float) e.headerArea.getBottom() - 1.0f, 0.0f, (float) mui::kWidth, col::grid);
     // Axell's Dojo: the family emblem, its wave and dot in this plugin's colour
     axell::brand::drawEmblem (g, { 12.0f, 6.0f, 46.0f, 46.0f }, juce::Colour (0xff58c27d));
-    axell::brand::drawTitle (g, 68.0f, 28.0f, "Master", juce::String (juce::CharPointer_UTF8 ("\xe5\x8c\xa0"))); // 匠
+    axell::brand::drawVersion (g, axell::brand::drawTitle (g, 68.0f, 28.0f, "Master",
+                                                               juce::String (juce::CharPointer_UTF8 ("\xe5\x8c\xa0"))), // 匠
+                               28.0f, AXELL_VERSION_STRING);
     g.setFont (ui::caps (10.0f, 1));
     g.setColour (col::dim);
     g.drawText ("CLIPPER  +  TRUE-PEAK LIMITER  +  LOUDNESS", 67, 37, 300, 14, Justification::centredLeft);
