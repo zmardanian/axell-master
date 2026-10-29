@@ -1,6 +1,6 @@
 * Loading module...
 
-	/var/home/Alex/axell-master/build/AxellMaster_artefacts/Release/VST3/Axell Master.vst3
+	~/axell-master/build/AxellMaster_artefacts/Release/VST3/Axell Master.vst3
 
 * Check valid bundle structure...
 

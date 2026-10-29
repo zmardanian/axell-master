@@ -36,7 +36,7 @@ def stereo(x):
 
 MAT = {}
 MAT["master"] = {k: read(p)[1] for k, p in MIXES.items()}
-_, dv = read("/home/Alex/Desktop/dry vocal.wav"); _, pv = read("/home/Alex/Desktop/axell penta eq vocal.wav")
+_, dv = read(os.path.expanduser("~/Desktop/dry vocal.wav")); _, pv = read(os.path.expanduser("~/Desktop/axell penta eq vocal.wav"))
 MAT["vocal"] = {"dry vocal": stereo(dv), "processed vocal": stereo(pv)}
 MAT["speech"] = {"dry vocal": stereo(dv)}
 MAT["beat"] = {"beat (dry bounce)": read(MIXES["dry"])[1][:21 * FS], "beat (penta bounce)": read(MIXES["penta"])[1][:21 * FS]}

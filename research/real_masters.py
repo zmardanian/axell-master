@@ -12,8 +12,8 @@ ns = {"__file__": os.path.join(ROOT, "tests/independent/master_audit.py")}
 exec(src[:src.index("AUDIT_START")], ns)
 Run, run_all, true_peak, k_weight = ns["Run"], ns["run_all"], ns["true_peak"], ns["k_weight"]
 
-MIXES = {"suite": "/home/Alex/Desktop/axell suite on.wav", "dry": "/home/Alex/Desktop/dry vocal+beat.wav",
-         "penta": "/home/Alex/Desktop/axell penta eq vocal+beat.wav"}
+MIXES = {"suite": os.path.expanduser("~/Desktop/axell suite on.wav"), "dry": os.path.expanduser("~/Desktop/dry vocal+beat.wav"),
+         "penta": os.path.expanduser("~/Desktop/axell penta eq vocal+beat.wav")}
 FS = 48000
 
 def read(p):

@@ -2,12 +2,12 @@ Random seed: 0x2727e89
 Validation started
 Strictness level: 10
 -----------------------------------------------------------------
-Starting tests in: pluginval / Scan for plugins located in: /var/home/Alex/axell-master/build/AxellMaster_artefacts/Release/VST3/Axell Master.vst3...
+Starting tests in: pluginval / Scan for plugins located in: ~/axell-master/build/AxellMaster_artefacts/Release/VST3/Axell Master.vst3...
 Num plugins found: 1
 
 Testing plugin: VST3-Axell Master-fdde94fb-89723899
 Axell Yobag: Axell Master v3.0.0
-Completed tests in pluginval / Scan for plugins located in: /var/home/Alex/axell-master/build/AxellMaster_artefacts/Release/VST3/Axell Master.vst3
+Completed tests in pluginval / Scan for plugins located in: ~/axell-master/build/AxellMaster_artefacts/Release/VST3/Axell Master.vst3
 -----------------------------------------------------------------
 Starting tests in: pluginval / Open plugin (cold)...
 Completed tests in pluginval / Open plugin (cold)
