@@ -280,3 +280,21 @@ the sound at all, so every speed-up must give byte-identical output.
   oversampler taps padded to a multiple of eight to drop the scalar tail (slower), AVX2 without FMA (no faster, and it
   would drop older CPUs). FMA or -ffast-math were not considered: they change the output.
 
+
+## M21 - 4.0.3: true-peak work skipped where it provably cannot matter, output byte-identical
+Part of the suite-wide optimisation campaign (profiles: the true-peak limiter + meter are ~40 % of Master's real-time
+work; 8 interpolation phases x 128 taps per sample and channel). Rule: byte-identical output.
+- **Kept (M1):** every interpolated point is at most (largest |sample| in its 128-sample window) x (the largest sum
+  of |taps| over the phases, 3.27); the parabolic refinement runs only at a local maximum and adds at most an eighth.
+  With a cheap running maximum over >= 129 samples (the refinement also reads the previous sample's last phase), the
+  limiter skips phases 1-5 when that bound (x 1.001 for float rounding) is below the ceiling - its gain only depends
+  on `peak > ceiling`, and `peak` is a maximum of terms, so terms that stay below the ceiling in both versions cannot
+  change it. The meter skips against the block's peak so far. Phases 6-7 are always computed, with the same
+  arithmetic, for the next sample. Proof checked by a harness hashing every output sample and meter value (8 signals
+  incl. impulses, a sine at the ceiling, a near-Nyquist ramp, window-edge stress x 4 styles x 4 ceilings x 3 block
+  sizes; ASan/UBSan clean) and 150 renders of the plugin vs 4.0.2: identical.
+- **Kept (D1, shared detector):** spectral flatness from one log of a mantissa product (frexp) instead of one log per
+  bin; output-identical in 141,396 frames (not a guarantee in theory: a float feature could differ by one step).
+- **Kept (V1, shared FFT):** complex products written out (GCC's std::complex went through __muldc3).
+- **Rejected by measurement:** AVX2 dispatch of the oversampler (re-measured: slower at 2x/4x/8x, +0.9 % at 16x),
+  FMA (changes output, slower), PGO (< 1 %), padded oversampler taps (+34 %).

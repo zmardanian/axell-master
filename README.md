@@ -156,16 +156,17 @@ The reports are in `tests/`; the reasoning behind every design choice is in [doc
 | **4.0.0** | 2026-10-26 | ESS HOLD for a vocal bus (Velvet's sibilance detector + Duo 4.0's method in the shared core limiter: the word's gain through each ess, a shadow of the 3.0 path to return to) | 28 takes, +12 dB: esses over their word +2.76 -> +0.40 dB (Peak Catcher; +2.29..+3.73 -> +0.40..+1.46 over four vocal presets), vowels within 0.1 dB; 391 DSP + 66 plugin + 143 core checks, ASan clean, audit 29/29 (3.0 sessions bit-identical), pluginval L10, validator 47/47 |
 | **4.0.1** | 2026-10-26 | Faster pitch analysis in the shared core (the suite's sibilance detector (ESS HOLD)): eight lags in registers, same summation order | Output byte-identical to 4.0.0; CPU vocal presets with VOICE HOLD + ESS HOLD 8.50 -> 7.59 % of one core (-10.8 %), other presets unchanged |
 | **4.0.2** | 2026-10-27 | The version on the interface (small and quiet after the title) | Audio byte-identical to 4.0.1 |
+| **4.0.3** | 2026-11-15 | True-peak limiter and meter skip in-between points that provably cannot reach the ceiling (filter's worst-case gain); one log per detector frame; inline FFT products | Output byte-identical to 4.0.2 (150 renders); CPU defaults 4.63 -> 3.89 % of one core (-16 %), holds on 7.15 -> 6.64 %; 391 DSP + 66 plugin + 143 core checks, ASan clean, audit 29/29, pluginval L10, validator 47/47 |
 
 Every design decision with its measurement: [docs/DECISIONS.md](docs/DECISIONS.md); all changes: [CHANGELOG.md](CHANGELOG.md).
 
 ## Install (Linux)
 
-Download `AxellMaster-4.0.2-linux-x86_64.tar.gz` from the
+Download `AxellMaster-4.0.3-linux-x86_64.tar.gz` from the
 [latest release](https://github.com/zmardanian/axell-master/releases/latest) (optional: `sha256sum -c SHA256SUMS.txt`), then:
 
-    tar xzf AxellMaster-4.0.2-linux-x86_64.tar.gz
-    cd AxellMaster-4.0.2-linux-x86_64
+    tar xzf AxellMaster-4.0.3-linux-x86_64.tar.gz
+    cd AxellMaster-4.0.3-linux-x86_64
     ./install.sh
 
 The installer copies `Axell Master.vst3` to `~/.vst3`. Then in REAPER: Options > Preferences > Plug-ins > VST >

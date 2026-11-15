@@ -1,5 +1,21 @@
 # Changelog
 
+## 4.0.3 - 2026-11-15
+- **Lighter, same sound.** The true-peak limiter rebuilds 8 points between every pair of samples to catch peaks that
+  fall between them (128 multiplications each). When the loudest sample of the last 144 is too quiet for any of those
+  points to reach the ceiling - proven with the filter's worst-case gain - 5 of the 8 are skipped; the 2 the next
+  sample needs are still computed exactly. The meter does the same against its own peak. Output byte-for-byte the same
+  as 4.0.2: 150 renders through the released 4.0.2 and the new build (4 styles x 3 ceilings x 1x/4x/16x x 0/+12 dB
+  input x a vocal and a mix, plus VOICE HOLD / ESS HOLD).
+- The suite's sibilance detector (ESS HOLD) takes one logarithm per frame instead of 192, and the shared FFT multiplies
+  complex numbers inline - both output-identical (141,396 detector frames checked).
+- CPU at 48 kHz (DSP suite benchmark): defaults (16x) 4.63 -> 3.89 % of one core (-16 %); clip + shaped dither
+  5.36 -> 4.99 %; VOICE HOLD + ESS HOLD 7.15 -> 6.64 %. Whole renders of the real plugin: an 81 s -11 LUFS mix at
+  defaults -5.8 %, a vocal +12 dB with both holds -11.8 %. The quieter the material relative to the ceiling, the
+  larger the saving (limiter alone: -9 % on a -11 LUFS master, -35 % 6 dB lower, -53 % 12 dB lower).
+- Verified: DSP 391 + plugin 66 checks (ASan + UBSan clean), core 143/143, independent audit 29/29 (3.0.0 sessions
+  bit-identical), pluginval strictness 10 (+10 extra runs, 0 crashes), VST3 validator 47/47.
+
 ## 4.0.2 - 2026-10-27
 - **Version on the interface**: the plugin's version, small and quiet after the title - so you can always see which build is loaded. The audio is byte-for-byte the same as 4.0.1 (checked through the released 4.0.1 and the new build).
 
