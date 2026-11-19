@@ -75,7 +75,7 @@ target_link_libraries(axm_codecs INTERFACE opus axm_vorbis)
 
 juce_add_plugin(AxellMaster
   COMPANY_NAME              "Axell Yobag"
-  COMPANY_EMAIL             "axellpetre@protonmail.com"
+  COMPANY_EMAIL             "contact@axellsdojo.com"
   BUNDLE_ID                 com.axellyobag.axellmaster
   PLUGIN_MANUFACTURER_CODE  Axyb
   PLUGIN_CODE               Mst1
