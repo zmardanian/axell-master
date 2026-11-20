@@ -1,4 +1,5 @@
 #include "PluginEditor.h"
+#include <axell/gui/ScreenReader.h>
 
 #include <axell/gui/BrandTitle.h>
 
@@ -539,6 +540,7 @@ MasterEditor::MasterEditor (MasterProcessor& p) : AudioProcessorEditor (&p), pro
     constructed = true;
     timerCallback();
     startTimerHz (30);
+    axell::nameControlsForScreenReaders (*this);   // Narrator / VoiceOver read every control by name
 }
 
 MasterEditor::~MasterEditor()

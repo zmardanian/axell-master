@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.22)
-project(AxellMaster VERSION 4.0.3)
+project(AxellMaster VERSION 4.0.4)
 # Windows (MSVC): static runtime (no VC++ redistributable needed), M_PI, UTF-8 sources; GCC-style flags elsewhere only
 if(MSVC)
   set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
@@ -33,11 +33,15 @@ add_subdirectory(${AXELL_CORE_DIR} axell-core)
 # BSD-3-Clause; Opus with royalty-free patent licences). Fetched from the Xiph.Org release tarballs (pinned by hash)
 # and built as static, position-independent libraries.
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
-FetchContent_Declare(ogg URL https://github.com/xiph/ogg/releases/download/v1.3.6/libogg-1.3.6.tar.gz DOWNLOAD_EXTRACT_TIMESTAMP TRUE
+# DOWNLOAD_EXTRACT_TIMESTAMP is CMake 3.24+; 3.22 (the Ubuntu 22.04 portable build) would take it for a URL
+if(CMAKE_VERSION VERSION_GREATER_EQUAL 3.24)
+  set(EXTRACT_TS DOWNLOAD_EXTRACT_TIMESTAMP TRUE)
+endif()
+FetchContent_Declare(ogg URL https://github.com/xiph/ogg/releases/download/v1.3.6/libogg-1.3.6.tar.gz ${EXTRACT_TS}
   URL_HASH SHA256=83e6704730683d004d20e21b8f7f55dcb3383cdf84c0daedf30bde175f774638)
-FetchContent_Declare(vorbis URL https://github.com/xiph/vorbis/releases/download/v1.3.7/libvorbis-1.3.7.tar.gz DOWNLOAD_EXTRACT_TIMESTAMP TRUE
+FetchContent_Declare(vorbis URL https://github.com/xiph/vorbis/releases/download/v1.3.7/libvorbis-1.3.7.tar.gz ${EXTRACT_TS}
   URL_HASH SHA256=0e982409a9c3fc82ee06e08205b1355e5c6aa4c36bca58146ef399621b0ce5ab)
-FetchContent_Declare(opus URL https://github.com/xiph/opus/releases/download/v1.5.2/opus-1.5.2.tar.gz DOWNLOAD_EXTRACT_TIMESTAMP TRUE
+FetchContent_Declare(opus URL https://github.com/xiph/opus/releases/download/v1.5.2/opus-1.5.2.tar.gz ${EXTRACT_TS}
   URL_HASH SHA256=65c1d2f78b9f2fb20082c38cbe47c951ad5839345876e46941612ee87f9a7ce1)
 FetchContent_GetProperties(ogg)
 if(NOT ogg_POPULATED)

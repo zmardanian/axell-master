@@ -9,13 +9,13 @@
   Factory Info:
 	vendor = Axell Yobag
 	url = 
-	email = axellpetre@protonmail.com
+	email = contact@axellsdojo.com
 
   Class Info 0:
 	name = Axell Master
 	category = Audio Module Class
 	subCategories = Fx|Dynamics|Mastering
-	version = 4.0.2
+	version = 4.0.4
 	sdkVersion = VST 3.8.0
 	cid = ABCDEF019182FAEB417879624D737431
 
@@ -23,7 +23,7 @@
 	name = Axell Master
 	category = Component Controller Class
 	subCategories = Fx|Dynamics|Mastering
-	version = 4.0.2
+	version = 4.0.4
 	sdkVersion = VST 3.8.0
 	cid = ABCDEF011234ABCD417879624D737431
 

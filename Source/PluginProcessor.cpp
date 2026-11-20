@@ -17,6 +17,7 @@ juce::String dbText (float v) { return (v > 0.0f ? "+" : "") + juce::String (v, 
 juce::String msText (float v) { return v < 10.0f ? juce::String (v, 2) + " ms" : juce::String (juce::roundToInt (v)) + " ms"; }
 juce::String pctText (float v) { return juce::String (juce::roundToInt (v)) + " %"; }
 const juce::Identifier kPresetNameId ("presetName");
+const juce::Identifier kProgramId ("program");   // the factory preset last chosen, so hosts see the same Program after a reload
 } // namespace
 
 APVTS::ParameterLayout MasterProcessor::createLayout()
@@ -389,6 +390,7 @@ void MasterProcessor::getStateInformation (juce::MemoryBlock& destData)
 {
     auto state = apvts.copyState();
     state.setProperty (kPresetNameId, getPresetName(), nullptr);
+    state.setProperty (kProgramId, currentProgram.load(), nullptr);
     std::unique_ptr<juce::XmlElement> xml (state.createXml());
     copyXmlToBinary (*xml, destData);
 }
@@ -400,6 +402,10 @@ void MasterProcessor::setStateInformation (const void* data, int sizeInBytes)
     {
         auto tree = juce::ValueTree::fromXml (*xml);
         setPresetName (tree.getProperty (kPresetNameId, getPresetName()).toString());
+        // only the index: the parameters come from the state itself, the preset is not applied again
+        if (tree.hasProperty (kProgramId))
+            currentProgram.store (juce::jlimit (0, juce::jmax (0, getNumPrograms() - 1), (int) tree.getProperty (kProgramId)));
+        tree.removeProperty (kProgramId, nullptr);
         restoreTree (tree);
     }
 }
